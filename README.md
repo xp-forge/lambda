@@ -43,14 +43,14 @@ REPORT RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24  Init Duration: 922.19 ms
 "Hello Timm from test @ us-east-1"
 ```
 
-*This functionality is achived by using the great [Docker image provided by LambCI](https://github.com/lambci/docker-lambda)!*
+*This functionality is provided by the great [Docker image provided by LambCI](https://github.com/lambci/docker-lambda)!*
 
 Setup
 -----
 The first step is to create and publish the runtime layer:
 
 ```bash
-$ xp lambda runtime > runtime.zip
+$ xp lambda runtime
 $ aws lambda publish-layer-version \
   --layer-name lambda-xp-runtime \
   --zip-file fileb://./runtime.zip \
