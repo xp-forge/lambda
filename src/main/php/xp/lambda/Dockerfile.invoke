@@ -1,0 +1,9 @@
+FROM lambda-xp-runtime as runtime
+
+FROM lambci/lambda:provided
+
+COPY --from=runtime /opt/php/bin/ /opt/bin/
+
+COPY --from=runtime /opt/php/bootstrap /opt/bootstrap
+
+ENV TZ UTC

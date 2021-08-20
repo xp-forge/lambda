@@ -1,0 +1,43 @@
+FROM amazonlinux:2018.03.0.20210721.0 as builder
+
+ARG php_version="8.0.9"
+ARG xp_version="8.5.1"
+
+# Install PHP build dependencies
+RUN curl -O http://mirror.centos.org/centos/7/os/x86_64/Packages/bison-3.0.4-2.el7.x86_64.rpm
+
+RUN yum clean all && yum install -y \
+  autoconf \
+  gcc \
+  gcc-c++ \
+  make \
+  re2c \
+  openssl-devel \
+  tar \
+  zip \
+  bison-3.0.4-2.el7.x86_64.rpm
+
+# Build PHP
+RUN curl -L https://github.com/php/php-src/archive/php-${php_version}.tar.gz | tar -xvz
+
+RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
+  --prefix=/opt/php/ \
+  --without-libxml \
+  --without-sqlite3 \
+  --with-openssl \
+  --disable-pdo \
+  --disable-dom \
+  --disable-simplexml \
+  --disable-xml \
+  --disable-xmlreader \
+  --disable-xmlwriter && \
+  make all install
+
+# Create XP Bootstrap
+RUN curl -L https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/e/entrypoint/xp-run-${xp_version}.sh \
+  | sed -e 's/"$@"/xp.lambda.AwsRunner/g' > /opt/php/bootstrap \
+  && chmod 755 /opt/php/bootstrap
+
+RUN cd /opt/php && zip runtime.zip bin/php bootstrap
+
+CMD cat /opt/php/runtime.zip
