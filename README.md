@@ -1,12 +1,12 @@
 AWS Lambda for the XP Framework
 ========================================================================
 
-[![Build status on GitHub](https://github.com/xp-forge/web/workflows/Tests/badge.svg)](https://github.com/xp-forge/web/actions)
+[![Build status on GitHub](https://github.com/xp-forge/aws-lambda/workflows/Tests/badge.svg)](https://github.com/xp-forge/aws-lambda/actions)
 [![XP Framework Module](https://raw.githubusercontent.com/xp-framework/web/master/static/xp-framework-badge.png)](https://github.com/xp-framework/core)
 [![BSD Licence](https://raw.githubusercontent.com/xp-framework/web/master/static/licence-bsd.png)](https://github.com/xp-framework/core/blob/master/LICENCE.md)
 [![Requires PHP 7.0+](https://raw.githubusercontent.com/xp-framework/web/master/static/php-7_0plus.svg)](http://php.net/)
 [![Supports PHP 8.0+](https://raw.githubusercontent.com/xp-framework/web/master/static/php-8_0plus.svg)](http://php.net/)
-[![Latest Stable Version](https://poser.pugx.org/xp-forge/web/version.png)](https://packagist.org/packages/xp-forge/web)
+[![Latest Stable Version](https://poser.pugx.org/xp-forge/aws-lambda/version.png)](https://packagist.org/packages/xp-forge/aws-lambda)
 
 Serverless infrastructure.
 
