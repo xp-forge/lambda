@@ -42,6 +42,12 @@ class AwsRunner {
     return $c;
   }
 
+  /**
+   * Reads a value from the given input stream
+   *
+   * @param  io.streams.InputStream
+   * @return var
+   */
   private static function read($in) {
     return Json::read(new StreamInput($in));
   }
