@@ -78,11 +78,11 @@ $ aws iam create-role \
 After ensuring your dependencies are up-to-date using composer, create the layer:
 
 ```bash
-$ zip -r greet.zip src vendor
+$ zip -r task.zip class.pth src vendor
 $ aws lambda create-function \
   --function-name greet \
   --handler Greet \
-  --zip-file fileb://./greet.zip \
+  --zip-file fileb://./task.zip \
   --runtime provided \
   --role "arn:aws:iam::XXXXXXXXXXXX:role/service-role/InvokeLambda" \
   --region us-east-1 \
@@ -94,10 +94,10 @@ Deployment
 After having initially created your lambda, you can update its code as follows:
 
 ```bash
-$ zip -r greet.zip src vendor
+$ zip -r task.zip class.pth src vendor
 $ aws lambda update-function-code \
   --function-name greet \
-  --zip-file fileb://./greet.zip \
+  --zip-file fileb://./task.zip \
   --publish
 ```
 
