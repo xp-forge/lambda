@@ -1,5 +1,5 @@
 {
-  "name" : "xp-forge/aws-lambda",
+  "name" : "xp-forge/lambda",
   "type" : "library",
   "homepage" : "http://xp-framework.net/",
   "license" : "BSD-3-Clause",
