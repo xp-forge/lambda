@@ -35,12 +35,12 @@ Development
 To test your lambda locally, run the following:
 
 ```bash
-$ xp lambda invoke Greet '{"name":"Test"}'
+$ xp lambda invoke Greet '{"name":"Timm"}'
 START RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24 Version: $LATEST
 END RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24
 REPORT RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24  Init Duration: 922.19 ms...
 
-"Hello Test from test @ us-east-1"
+"Hello Timm from test @ us-east-1"
 ```
 
 *This functionality is provided by the great [Docker image provided by LambCI](https://github.com/lambci/docker-lambda)!*
@@ -75,7 +75,7 @@ $ aws iam create-role \
   --assume-role-policy-document file:///tmp/trust-policy.json
 ```
 
-After ensuring your dependencies are up-to-date using composer, create the layer:
+After ensuring your dependencies are up-to-date using composer, create the function:
 
 ```bash
 $ zip -r task.zip class.pth src vendor
@@ -87,18 +87,6 @@ $ aws lambda create-function \
   --role "arn:aws:iam::XXXXXXXXXXXX:role/service-role/InvokeLambda" \
   --region us-east-1 \
   --layers "arn:aws:lambda:us-east-1:XXXXXXXXXXXX:layer:lambda-xp-runtime:1"
-```
-
-Deployment
-----------
-After having initially created your lambda, you can update its code as follows:
-
-```bash
-$ zip -r task.zip class.pth src vendor
-$ aws lambda update-function-code \
-  --function-name greet \
-  --zip-file fileb://./task.zip \
-  --publish
 ```
 
 Invocation
@@ -113,6 +101,18 @@ $ aws lambda invoke \
   response.json
 $ cat response.json
 "Hello Timm from greet @ us-east-1"
+```
+
+Deploying changes
+-----------------
+After having initially created your lambda, you can update its code as follows:
+
+```bash
+$ zip -r task.zip class.pth src vendor
+$ aws lambda update-function-code \
+  --function-name greet \
+  --zip-file fileb://./task.zip \
+  --publish
 ```
 
 Context
