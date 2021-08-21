@@ -116,7 +116,7 @@ class AwsRunner {
         break;
       }
 
-      $context= new Context($r->headers());
+      $context= new Context($r->headers(), $_ENV);
       try {
         $type= 'response';
         $response= self::value($lambda($context->payload ? self::read($r->in()) : null, $context));
