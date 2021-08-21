@@ -40,4 +40,4 @@ RUN curl -L https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/
 
 RUN cd /opt/php && zip runtime.zip bin/php bootstrap
 
-CMD cat /opt/php/runtime.zip
+ENV TZ UTC

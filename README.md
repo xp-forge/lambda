@@ -40,7 +40,7 @@ START RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24 Version: $LATEST
 END RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24
 REPORT RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24  Init Duration: 922.19 ms...
 
-"Hello Timm from test @ us-east-1"
+"Hello Test from test @ us-east-1"
 ```
 
 *This functionality is provided by the great [Docker image provided by LambCI](https://github.com/lambci/docker-lambda)!*
@@ -99,6 +99,20 @@ $ aws lambda update-function-code \
   --function-name greet \
   --zip-file fileb://./task.zip \
   --publish
+```
+
+Invocation
+----------
+To invoke the function:
+
+```bash
+$ aws lambda invoke \
+  --cli-binary-format raw-in-base64-out \
+  --function-name greet \
+  --payload '{"name":"Timm"}'
+  response.json
+$ cat response.json
+"Hello Timm from test @ us-east-1"
 ```
 
 Context

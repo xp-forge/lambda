@@ -4,13 +4,31 @@ use io\{Path, File};
 use lang\Process;
 use util\cmd\Console;
 
-/** XP `lambda` subcommand */
+/**
+ * XP AWS Lambda
+ * =============
+ *
+ * - Store runtime layer as `runtime.zip`, building if necessary:
+ *   ```sh
+ *   $ xp lambda runtime
+ *   ```
+ * - Rebuild runtime:
+ *   ```sh
+ *   $ xp lambda runtime -b
+ *   ```
+ * - Invoke lambda
+ *   ```sh
+ *   $ xp lambda invoke Greet '{"name":"Test"}'
+ *   ```
+ * This command requires Docker to be installed!
+ */
 class Runner {
 
   /** Returns a given docker image, building it if necessary */
-  private static function image(string $docker, string $name, array $dependencies= []): string {
+  private static function image(string $docker, string $name, array $dependencies= [], bool $rebuild= false): string {
     $image= "lambda-xp-{$name}";
-    exec("{$docker} image ls -q {$image}", $out, $result);
+
+    $rebuild ? $out= [] : exec("{$docker} image ls -q {$image}", $out, $result);
     if (empty($out)) {
 
       // Ensure dependencies exist
@@ -19,7 +37,7 @@ class Runner {
       }
 
       // Build this
-      $file= new Path(__DIR__, 'Dockerfile.'.$name);
+      $file= new File(__DIR__, 'Dockerfile.'.$name);
       passthru("{$docker} build -t {$image} -f {$file} .", $result);
     }
 
@@ -32,7 +50,8 @@ class Runner {
 
     switch ($args[0] ?? null) {
       case 'runtime':
-        $runtime= self::image($docker, 'runtime');
+        $rebuild= '-b' === ($args[1] ?? null);
+        $runtime= self::image($docker, 'runtime', [], $rebuild);
         $target= new Path('runtime.zip');
         $container= uniqid();
 
