@@ -30,6 +30,8 @@ class Greet extends Handler {
 }
 ```
 
+If you need to run any initialization code, you can do before returning the lambda from *target()*. This code is only run once during the initialization phase.
+
 Development
 -----------
 To test your lambda locally, run the following:
