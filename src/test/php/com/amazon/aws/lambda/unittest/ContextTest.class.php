@@ -53,6 +53,22 @@ class ContextTest {
   }
 
   #[Test]
+  public function payloadLength_unknown() {
+    Assert::equals(
+      null,
+      (new Context($this->headers))->payloadLength
+    );
+  }
+
+  #[Test]
+  public function payloadLength_set() {
+    Assert::equals(
+      6100,
+      (new Context($this->headers + ['Content-Length' => ['6100']]))->payloadLength
+    );
+  }
+
+  #[Test]
   public function remainingTime_accessor() {
     Assert::equals(
       180.2,

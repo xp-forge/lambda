@@ -118,8 +118,10 @@ class AwsRunner {
 
       $context= new Context($r->headers(), $_ENV);
       try {
+        $event= 0 === $context->payloadLength ? null : self::read($r->in());
+
         $type= 'response';
-        $response= self::value($lambda($context->payload ? self::read($r->in()) : null, $context));
+        $response= self::value($lambda($event, $context));
       } catch (Throwable $t) {
         $type= 'error';
         $response= self::error($t);

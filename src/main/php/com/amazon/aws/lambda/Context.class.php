@@ -14,7 +14,7 @@ use text\json\{Json, StreamInput};
 class Context implements Value {
   public $awsRequestId, $invokedFunctionArn, $traceId, $clientContext, $cognitoIdentity, $deadline;
   public $functionName, $functionVersion, $memorySize, $region;
-  public $payload;
+  public $payloadLength;
 
   /**
    * Creates a new invocation from given request headers. Extracts well-known
@@ -33,7 +33,7 @@ class Context implements Value {
     $this->functionVersion= $environment['AWS_LAMBDA_FUNCTION_VERSION'] ?? '$LATEST';
     $this->memorySize= $environment['AWS_LAMBDA_FUNCTION_MEMORY_SIZE'] ?? '1536';
     $this->region= $environment['AWS_REGION'] ?? 'us-east-1';
-    $this->payload= cast($headers['Content-Length'][0] ?? null, '?int');
+    $this->payloadLength= cast($headers['Content-Length'][0] ?? null, '?int');
   }
 
   /** Returns remaining time in seconds */
@@ -47,7 +47,7 @@ class Context implements Value {
   /** @return string */
   public function toString() {
     return sprintf(
-      "%s(awsRequestId: %s, payload: %s)@{\n".
+      "%s(awsRequestId: %s, payloadLength: %s)@{\n".
       "  [invokedFunctionArn] %s\n".
       "  [traceId           ] %s\n".
       "  [deadline          ] %s\n".
@@ -60,7 +60,7 @@ class Context implements Value {
       "}\n",
       nameof($this),
       $this->awsRequestId,
-      null === $this->payload ? '(none)' : $this->payload.' bytes',
+      null === $this->payloadLength ? '(unknown)' : $this->payloadLength.' bytes',
       $this->invokedFunctionArn,
       $this->traceId ?? '(null)',
       $this->deadline ?? '(null)',

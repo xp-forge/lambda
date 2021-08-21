@@ -131,7 +131,7 @@ public class com.amazon.aws.lambda.Context implements lang.Value {
   public string $functionVersion
   public string $memorySize
   public string $region
-  public int $payload
+  public int $payloadLength
 
   public function __construct(array $headers, array $environment)
 
