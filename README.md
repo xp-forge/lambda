@@ -112,7 +112,7 @@ $ aws lambda invoke \
   --payload '{"name":"Timm"}'
   response.json
 $ cat response.json
-"Hello Timm from test @ us-east-1"
+"Hello Timm from greet @ us-east-1"
 ```
 
 Context
