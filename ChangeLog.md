@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 0.3.0 / 2021-08-22
+
 * Implemented `xp lambda package` subcommand for packaging lambda code
   including the *src* and *vendor* directories as requested in issue #2
   (@thekid)
