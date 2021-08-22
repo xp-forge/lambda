@@ -3,6 +3,9 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Implemented `xp lambda package` subcommand for packaging lambda code
+  including the *src* and *vendor* directories as requested in issue #2
+  (@thekid)
 * Renamed context member payload to payloadLength - @thekid
 
 ## 0.2.0 / 2021-08-21
