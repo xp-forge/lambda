@@ -12,6 +12,7 @@ Serverless infrastructure.
 
 Example
 -------
+Put this code in a file called *Greet.class.php*:
 
 ```php
 use com\amazon\aws\lambda\Handler;
@@ -80,7 +81,7 @@ $ aws iam create-role \
 After ensuring your dependencies are up-to-date using composer, create the function:
 
 ```bash
-$ zip -r task.zip class.pth src vendor
+$ xp lambda package Greet.class.php
 $ aws lambda create-function \
   --function-name greet \
   --handler Greet \
@@ -110,7 +111,7 @@ Deploying changes
 After having initially created your lambda, you can update its code as follows:
 
 ```bash
-$ zip -r task.zip class.pth src vendor
+$ xp lambda package Greet.class.php
 $ aws lambda update-function-code \
   --function-name greet \
   --zip-file fileb://./task.zip \
