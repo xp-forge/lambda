@@ -38,7 +38,7 @@ Development
 To test your lambda locally, run the following:
 
 ```bash
-$ xp lambda invoke Greet '{"name":"Timm"}'
+$ xp lambda test Greet '{"name":"Timm"}'
 START RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24 Version: $LATEST
 END RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24
 REPORT RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24  Init Duration: 922.19 ms...

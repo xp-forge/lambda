@@ -18,9 +18,9 @@ use util\cmd\Console;
  *   ```sh
  *   $ xp lambda runtime -b
  *   ```
- * - Invoke lambda:
+ * - Test lambda:
  *   ```sh
- *   $ xp lambda invoke Greet '{"name":"Test"}'
+ *   $ xp lambda test Greet '{"name":"Test"}'
  *   ```
  * - Package `task.zip` file for deployment, including `src` and `vendor`:
  *   ```sh
@@ -44,7 +44,7 @@ class Runner {
       }
 
       // Build this
-      $file= new File(__DIR__, 'Dockerfile.'.$name);
+      $file= new Path(__DIR__, 'Dockerfile.'.$name);
       passthru("{$docker} build -t {$image} -f {$file} .", $result);
     }
 
@@ -102,13 +102,13 @@ class Runner {
         Console::writeLine('Wrote ', number_format(filesize($target)), ' bytes');
         return $result;
 
-      case 'invoke':
-        $invoke= self::image($docker, 'invoke', ['runtime' => []]);
+      case 'test':
+        $test= self::image($docker, 'test', ['runtime' => []]);
         $cwd= getcwd();
         $handler= $args[1] ?? 'Handler';
         $payload= '"'.str_replace('"', '\\"', $args[2] ?? '{}').'';
 
-        passthru("{$docker} run --rm -v {$cwd}:/var/task:ro {$invoke} {$handler} {$payload}", $result);
+        passthru("{$docker} run --rm -v {$cwd}:/var/task:ro {$test} {$handler} {$payload}", $result);
         return $result;
 
       case 'package':

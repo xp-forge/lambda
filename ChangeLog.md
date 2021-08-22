@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Renamed `xp lambda invoke` to `xp lambda test` to make clear we're
+  not invoking the deployed lambda
+  (@thekid)
+
 ## 0.3.0 / 2021-08-22
 
 * Implemented `xp lambda package` subcommand for packaging lambda code
