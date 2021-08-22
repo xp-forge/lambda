@@ -3,6 +3,12 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 0.5.0 / 2021-08-22
+
+* Renamed `task.zip` to `function.zip` in order not to introduce more
+  vocabulary than necessary
+  (@thekid)
+
 ## 0.4.0 / 2021-08-22
 
 * Renamed `xp lambda invoke` to `xp lambda test` to make clear we're

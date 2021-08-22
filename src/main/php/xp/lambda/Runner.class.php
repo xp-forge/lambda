@@ -22,7 +22,7 @@ use util\cmd\Console;
  *   ```sh
  *   $ xp lambda test Greet '{"name":"Test"}'
  *   ```
- * - Package `task.zip` file for deployment, including `src` and `vendor`:
+ * - Package `function.zip` file for deployment, including `src` and `vendor`:
  *   ```sh
  *   $ xp lambda package Greet.class.php
  *   ```
@@ -112,7 +112,7 @@ class Runner {
         return $result;
 
       case 'package':
-        $target= new Path('task.zip');
+        $target= new Path('function.zip');
         $base= new Folder('.');
         $sources= [...array_slice($args, 1), 'src', 'vendor'];
         $compression= extension_loaded('zlib') ? Compression::$GZ : Compression::$NONE;

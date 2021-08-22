@@ -85,7 +85,7 @@ $ xp lambda package Greet.class.php
 $ aws lambda create-function \
   --function-name greet \
   --handler Greet \
-  --zip-file fileb://./task.zip \
+  --zip-file fileb://./function.zip \
   --runtime provided \
   --role "arn:aws:iam::XXXXXXXXXXXX:role/service-role/InvokeLambda" \
   --region us-east-1 \
@@ -114,7 +114,7 @@ After having initially created your lambda, you can update its code as follows:
 $ xp lambda package Greet.class.php
 $ aws lambda update-function-code \
   --function-name greet \
-  --zip-file fileb://./task.zip \
+  --zip-file fileb://./function.zip \
   --publish
 ```
 
