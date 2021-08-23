@@ -38,4 +38,4 @@ RUN curl -L https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/
   | sed -e 's/"$@"/xp.lambda.AwsRunner/g' > /opt/php/bootstrap \
   && chmod 755 /opt/php/bootstrap
 
-RUN cd /opt/php && zip runtime.zip bin/php bootstrap
+RUN cd /opt/php && strip bin/php && zip -9 runtime.zip bin/php bootstrap
