@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 0.6.0 / 2021-08-23
+
 * Decreased size of runtime layer from ~8.4 MB to ~2.4 MB by using `strip`
   and `zip -9`, reducing layer publishing time as well as initialization duration
   https://stackoverflow.com/questions/4179010/how-to-strip-executables-thoroughly
