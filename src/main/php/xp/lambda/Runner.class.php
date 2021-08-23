@@ -53,10 +53,10 @@ class Runner {
 
   /** Returns ZIP file entries */
   private static function entries(Folder $base, Path $path, Compression $compression, $exclude) {
+    if (preg_match($exclude, $path->toString('/'))) return;
+
     $relative= rtrim(str_replace($base->getURI(), '', $path->toString()), DIRECTORY_SEPARATOR);
-    if (preg_match($exclude, $relative)) {
-      // NOOP
-    } else if ($path->isFile()) {
+    if ($path->isFile()) {
       yield function($z) use($relative, $path, $compression) {
         $file= $z->add(new ZipFileEntry($relative));
 
@@ -116,7 +116,7 @@ class Runner {
         $base= new Folder('.');
         $sources= [...array_slice($args, 1), 'src', 'vendor'];
         $compression= extension_loaded('zlib') ? Compression::$GZ : Compression::$NONE;
-        $exclude= '/src.test.php/';
+        $exclude= '#/(\..+|src/test|src/it)(/|$)#';
 
         Console::writeLine('[+] Creating ', $target, ' (compression: ', $compression, ')');
         $z= ZipFile::create($target->asFile()->out());
