@@ -31,6 +31,11 @@ use util\cmd\Console;
 class Runner {
   const COMPRESSION_THRESHOLD = 24;
 
+  /** Returns docker runtime */
+  private static function docker() {
+    return CommandLine::forName(PHP_OS)->compose(Process::resolve('docker'), []);
+  }
+
   /** Returns a given docker image, building it if necessary */
   private static function image(string $docker, string $name, array $dependencies= [], bool $rebuild= false): string {
     $image= "lambda-xp-{$name}";
@@ -77,10 +82,9 @@ class Runner {
 
   /** Entry point */
   public static function main(array $args): int {
-    $docker= CommandLine::forName(PHP_OS)->compose(Process::resolve('docker'), []);
-
     switch ($args[0] ?? null) {
       case 'runtime':
+        $docker= self::docker();
         $rebuild= '-b' === ($args[1] ?? null);
         $runtime= self::image($docker, 'runtime', [], $rebuild);
         $target= new Path('runtime.zip');
@@ -103,6 +107,7 @@ class Runner {
         return $result;
 
       case 'test':
+        $docker= self::docker();
         $test= self::image($docker, 'test', ['runtime' => []]);
         $cwd= getcwd();
         $handler= $args[1] ?? 'Handler';
