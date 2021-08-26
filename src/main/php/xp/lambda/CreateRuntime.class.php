@@ -6,16 +6,17 @@ use util\cmd\Console;
 class CreateRuntime {
   use Docker;
 
-  private $target, $rebuild;
+  private $version, $target, $rebuild;
 
-  public function __construct(Path $target, bool $rebuild= false) {
-    $this->target= $target;
+  public function __construct(string $version, Path $target, bool $rebuild= false) {
+    $this->version= $version;
+    $this->target= new Path(sprintf($target, $version));
     $this->rebuild= $rebuild;
   }
 
   public function run(): int {
     $docker= $this->command();
-    $runtime= $this->image('runtime', [], $this->rebuild);
+    $runtime= $this->image('runtime', $this->version, [], $this->rebuild);
     $container= uniqid();
 
     $commands= [

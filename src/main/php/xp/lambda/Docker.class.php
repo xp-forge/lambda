@@ -12,20 +12,20 @@ trait Docker {
   }
 
   /** Returns a given docker image, building it if necessary */
-  private function image(string $name, array $dependencies= [], bool $rebuild= false): string {
-    $image= "lambda-xp-{$name}";
+  private function image(string $name, string $version, array $dependencies= [], bool $rebuild= false): string {
+    $image= "lambda-xp-{$name}:{$version}";
 
     $rebuild ? $out= [] : exec("{$this->command()} image ls -q {$image}", $out, $result);
     if (empty($out)) {
 
       // Ensure dependencies exist
       foreach ($dependencies as $dependency => $transitive) {
-        self::image($docker, $dependency, $transitive);
+        $this->image($dependency, $version, $transitive);
       }
 
       // Build this
       $file= new Path(__DIR__, 'Dockerfile.'.$name);
-      passthru("{$this->command()} build -t {$image} -f {$file} .", $result);
+      passthru("{$this->command()} build -t {$image} --build-arg php_version={$version} -f {$file} .", $result);
     }
 
     return $image;
