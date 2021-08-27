@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Fixed issue #3: Context object compatibility. Context now also declares
+  the properties *logGroupName* and *logStreamName* like in NodeJS, and
+  uses *memoryLimitInMB* instead of *memorySize*.
+  (@thekid)
 * Merged PR #4: Pass version along to docker images. Use `xp lambda runtime`
   to use the current PHP version, `xp lambda runtime:8.0` to use the newest
   PHP 8.0 release, and `xp lambda runtime:8.0.10` for version pinning.

@@ -13,7 +13,7 @@ use text\json\{Json, StreamInput};
  */
 class Context implements Value {
   public $awsRequestId, $invokedFunctionArn, $traceId, $clientContext, $cognitoIdentity, $deadline;
-  public $functionName, $functionVersion, $memorySize, $region;
+  public $functionName, $functionVersion, $memoryLimitInMB, $logGroupName, $logStreamName, $region;
   public $payloadLength;
 
   /**
@@ -31,8 +31,10 @@ class Context implements Value {
     $this->cognitoIdentity= $headers['Lambda-Runtime-Cognito-Identity'][0] ?? null;
     $this->functionName= $environment['AWS_LAMBDA_FUNCTION_NAME'] ?? 'test';
     $this->functionVersion= $environment['AWS_LAMBDA_FUNCTION_VERSION'] ?? '$LATEST';
-    $this->memorySize= $environment['AWS_LAMBDA_FUNCTION_MEMORY_SIZE'] ?? '1536';
+    $this->memoryLimitInMB= $environment['AWS_LAMBDA_FUNCTION_MEMORY_SIZE'] ?? '1536';
     $this->region= $environment['AWS_REGION'] ?? 'us-east-1';
+    $this->logGroupName= $environment['AWS_LAMBDA_LOG_GROUP_NAME'] ?? null;
+    $this->logStreamName= $environment['AWS_LAMBDA_LOG_STREAM_NAME'] ?? null;
     $this->payloadLength= cast($headers['Content-Length'][0] ?? null, '?int');
   }
 
@@ -53,7 +55,9 @@ class Context implements Value {
       "  [deadline          ] %s\n".
       "  [functionName      ] %s\n".
       "  [functionVersion   ] %s\n".
-      "  [memoryLimit       ] %s\n".
+      "  [memoryLimitInMB   ] %s\n".
+      "  [logGroupName      ] %s\n".
+      "  [logStreamName     ] %s\n".
       "  [region            ] %s\n".
       "  [clientContext     ] %s\n".
       "  [identity          ] %s\n".
@@ -66,7 +70,9 @@ class Context implements Value {
       $this->deadline ?? '(null)',
       $this->functionName,
       $this->functionVersion,
-      $this->memoryLimit,
+      $this->memoryLimitInMB,
+      $this->logGroupName ?? '(null)',
+      $this->logStreamName ?? '(null)',
       $this->region,
       $this->clientContext ?? '(null)',
       $this->identity ?? '(null)'

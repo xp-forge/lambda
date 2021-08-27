@@ -16,6 +16,8 @@ class ContextTest {
     'AWS_LAMBDA_FUNCTION_NAME'        => 'test',
     'AWS_LAMBDA_FUNCTION_VERSION'     => '$LATEST',
     'AWS_LAMBDA_FUNCTION_MEMORY_SIZE' => 1536,
+    'AWS_LAMBDA_LOG_GROUP_NAME'       => '/aws/lambda/test',
+    'AWS_LAMBDA_LOG_STREAM_NAME'      => '2021/08/27/[$LATEST]17c13f63daf4a2a178be63f5531f77cc',
     'AWS_REGION'                      => 'us-east-1',
   ];
 
@@ -32,7 +34,9 @@ class ContextTest {
   private function environment() {
     yield ['AWS_LAMBDA_FUNCTION_NAME', 'functionName'];
     yield ['AWS_LAMBDA_FUNCTION_VERSION', 'functionVersion'];
-    yield ['AWS_LAMBDA_FUNCTION_MEMORY_SIZE', 'memorySize'];
+    yield ['AWS_LAMBDA_FUNCTION_MEMORY_SIZE', 'memoryLimitInMB'];
+    yield ['AWS_LAMBDA_LOG_GROUP_NAME', 'logGroupName'];
+    yield ['AWS_LAMBDA_LOG_STREAM_NAME', 'logStreamName'];
     yield ['AWS_REGION', 'region'];
   }
 
@@ -73,6 +77,14 @@ class ContextTest {
     Assert::equals(
       180.2,
       round((new Context($this->headers))->remainingTime(1629390002.279), 1)
+    );
+  }
+
+  #[Test]
+  public function string_representation_is_not_empty() {
+    Assert::notEquals(
+      '',
+      (new Context($this->headers, $this->environment))->toString()
     );
   }
 }

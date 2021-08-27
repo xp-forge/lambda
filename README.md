@@ -154,6 +154,8 @@ public class com.amazon.aws.lambda.Context implements lang.Value {
   public string $functionName
   public string $functionVersion
   public string $memorySize
+  public string $logGroupName
+  public string $logStreamName
   public string $region
   public int $payloadLength
 
