@@ -1,7 +1,7 @@
 FROM amazonlinux:2018.03.0.20210721.0 as builder
 
-ARG php_version="8.0.9"
-ARG xp_version="8.5.1"
+ARG php_version="?.?.?"
+ARG xp_version="?.?.?"
 
 # Install PHP build dependencies
 RUN curl -O http://mirror.centos.org/centos/7/os/x86_64/Packages/bison-3.0.4-2.el7.x86_64.rpm
