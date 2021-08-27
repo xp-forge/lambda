@@ -17,7 +17,9 @@ trait Docker {
 
     $rebuild ? $out= [] : exec("{$this->command()} image ls -q {$image}", $out, $result);
     if (empty($out)) {
-      $runners= substr($_ENV['XP_VERSION'], 0, strrpos($_ENV['XP_VERSION'], '.'));
+
+      // Support 6.1.0 as well as 6.1.0.1234
+      $runners= preg_replace('/^(\d+\.\d+\.\d+)(.*)/', '\$1', $_ENV['XP_VERSION']);
 
       // Ensure dependencies exist
       foreach ($dependencies as $dependency => $transitive) {
