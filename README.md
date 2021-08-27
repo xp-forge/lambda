@@ -173,3 +173,4 @@ See also
 * [What is AWS Lambda?](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
 * [Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
 * [AWS Lambda Custom Runtime for PHP: A Practical Example](https://aws.amazon.com/de/blogs/apn/aws-lambda-custom-runtime-for-php-a-practical-example/)
+* [AWS SDK for PHP](https://docs.aws.amazon.com/sdk-for-php/index.html)
