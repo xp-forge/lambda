@@ -10,7 +10,7 @@ class PackageLambda {
 
   private $target, $sources, $base, $exclude, $compression;
 
-  public function __construct(Path $target, Path $base, array $sources, string $exclude= '#/(\..+|src/test|src/it)(/|$)#') {
+  public function __construct(Path $target, Path $base, array $sources, string $exclude= '#(^|/)(\..+|src/test|src/it)(/|$)#') {
     $this->target= $target;
     $this->base= $base->asRealpath();
     $this->sources= $sources;
@@ -57,7 +57,7 @@ class PackageLambda {
     }
 
     $file= $z->add(new ZipFileEntry('class.pth'));
-    $file->out()->write(preg_replace($this->exclude, '?$0', file_get_contents('class.pth')));
+    $file->out()->write(preg_replace($this->exclude.'m', '?$1', file_get_contents('class.pth')));
     Console::writeLinef("\e[34m => [%1\$d/%1\$d] class.pth\e[0m", sizeof($this->sources) + 1);
 
     $z->close();
