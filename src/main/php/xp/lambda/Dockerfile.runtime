@@ -36,6 +36,7 @@ RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
 # Create XP Bootstrap
 RUN curl -L https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/e/entrypoint/xp-run-${xp_version}.sh \
   | sed -e 's/"$@"/xp.lambda.AwsRunner/g' > /opt/php/bootstrap \
-  && chmod 755 /opt/php/bootstrap
+  && chmod 755 /opt/php/bootstrap \
+  && head -1 /opt/php/bootstrap | grep '^#!'
 
 RUN cd /opt/php && strip bin/php && zip -9 runtime.zip bin/php bootstrap

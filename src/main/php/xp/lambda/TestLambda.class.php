@@ -18,8 +18,9 @@ class TestLambda {
   public function run(): int {
     $docker= $this->command();
     $test= $this->image('test', $this->version, ['runtime' => []]);
-    $payload= '"'.str_replace('"', '\\"', $this->payload).'"';
+    if (null === $test) return 1;
 
+    $payload= '"'.str_replace('"', '\\"', $this->payload).'"';
     passthru("{$docker} run --rm -v {$this->path}:/var/task:ro {$test} {$this->handler} {$payload}", $result);
     return $result;
   }

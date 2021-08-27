@@ -12,7 +12,7 @@ trait Docker {
   }
 
   /** Returns a given docker image, building it if necessary */
-  private function image(string $name, string $version, array $dependencies= [], bool $rebuild= false): string {
+  private function image(string $name, string $version, array $dependencies= [], bool $rebuild= false) {
     $image= "lambda-xp-{$name}:{$version}";
 
     $rebuild ? $out= [] : exec("{$this->command()} image ls -q {$image}", $out, $result);
@@ -29,8 +29,10 @@ trait Docker {
       // Build this
       $file= new Path(__DIR__, 'Dockerfile.'.$name);
       passthru("{$this->command()} build -t {$image} --build-arg php_version={$version} --build-arg xp_version={$runners} -f {$file} .", $result);
+    } else {
+      $result= 0;
     }
 
-    return $image;
+    return 0 === $result ? $image : null;
   }
 }
