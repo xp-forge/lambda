@@ -3,7 +3,6 @@
 use io\Path;
 use peer\http\HttpConnection;
 use text\json\{Json, StreamInput};
-use util\cmd\Console;
 
 /**
  * XP AWS Lambda
@@ -46,7 +45,6 @@ class Runner {
       $select= self::fetch('json&version='.$version);
     }
 
-    Console::writeLine('Using PHP ', $select['version']);
     return $select['version'];
   }
 
