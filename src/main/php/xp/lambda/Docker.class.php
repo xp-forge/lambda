@@ -19,7 +19,7 @@ trait Docker {
     if (empty($out)) {
 
       // Support 6.1.0 as well as 6.1.0.1234
-      $runners= preg_replace('/^(\d+\.\d+\.\d+)(.*)/', '\$1', $_ENV['XP_VERSION']);
+      $runners= preg_replace('/^(\d+\.\d+\.\d+)(.*)/', '$1', $_ENV['XP_VERSION']);
 
       // Ensure dependencies exist
       foreach ($dependencies as $dependency => $transitive) {
