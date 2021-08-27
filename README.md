@@ -119,6 +119,26 @@ $ aws lambda update-function-code \
   --publish
 ```
 
+Upgrading the runtime
+---------------------
+To upgrade an existing runtime layer, build the new runtime and publish a new version by calling the following to create a new version:
+
+```bash
+$ xp lambda runtime
+$ aws lambda publish-layer-version \
+  --layer-name lambda-xp-runtime \
+  --zip-file fileb://./runtime-X.X.X.zip \
+  --region us-east-1
+```
+
+Now, switch the function over to use this new layer:
+
+```bash
+$ aws lambda update-function-configuration \
+  --function-name greet \
+  --layers "arn:aws:lambda:us-east-1:XXXXXXXXXXXX:layer:lambda-xp-runtime:2"
+```
+
 Context
 -------
 The context object passed to the target lambda is defined as follows:
