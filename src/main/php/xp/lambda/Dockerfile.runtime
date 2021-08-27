@@ -1,7 +1,7 @@
 FROM amazonlinux:2018.03.0.20210721.0 as builder
 
-ARG php_version="8.0.9"
-ARG xp_version="8.5.1"
+ARG php_version="?.?.?"
+ARG xp_version="?.?.?"
 
 # Install PHP build dependencies
 RUN curl -O http://mirror.centos.org/centos/7/os/x86_64/Packages/bison-3.0.4-2.el7.x86_64.rpm
@@ -36,6 +36,7 @@ RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
 # Create XP Bootstrap
 RUN curl -L https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/e/entrypoint/xp-run-${xp_version}.sh \
   | sed -e 's/"$@"/xp.lambda.AwsRunner/g' > /opt/php/bootstrap \
-  && chmod 755 /opt/php/bootstrap
+  && chmod 755 /opt/php/bootstrap \
+  && head -1 /opt/php/bootstrap | grep '^#!'
 
 RUN cd /opt/php && strip bin/php && zip -9 runtime.zip bin/php bootstrap

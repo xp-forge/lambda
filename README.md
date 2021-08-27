@@ -22,8 +22,9 @@ class Greet extends Handler {
   /** @return com.amazon.aws.lambda.Lambda|callable */
   public function target() {
     return fn($event, $context) => sprintf(
-      'Hello %s from %s @ %s',
+      'Hello %s from PHP %s via %s @ %s',
       $event['name'],
+      PHP_VERSION,
       $context->functionName,
       $context->region
     );
@@ -43,7 +44,7 @@ START RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24 Version: $LATEST
 END RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24
 REPORT RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24  Init Duration: 922.19 ms...
 
-"Hello Timm from test @ us-east-1"
+"Hello Timm from PHP 8.0.10 via test @ us-east-1"
 ```
 
 *This functionality is provided by the great [LambCI Docker image](https://github.com/lambci/docker-lambda)!*
@@ -56,7 +57,7 @@ The first step is to create and publish the runtime layer:
 $ xp lambda runtime
 $ aws lambda publish-layer-version \
   --layer-name lambda-xp-runtime \
-  --zip-file fileb://./runtime.zip \
+  --zip-file fileb://./runtime-X.X.X.zip \
   --region us-east-1
 ```
 
@@ -116,6 +117,26 @@ $ aws lambda update-function-code \
   --function-name greet \
   --zip-file fileb://./function.zip \
   --publish
+```
+
+Upgrading the runtime
+---------------------
+To upgrade an existing runtime layer, build the new runtime and publish a new version by calling the following to create a new version:
+
+```bash
+$ xp lambda runtime
+$ aws lambda publish-layer-version \
+  --layer-name lambda-xp-runtime \
+  --zip-file fileb://./runtime-X.X.X.zip \
+  --region us-east-1
+```
+
+Now, switch the function over to use this new layer:
+
+```bash
+$ aws lambda update-function-configuration \
+  --function-name greet \
+  --layers "arn:aws:lambda:us-east-1:XXXXXXXXXXXX:layer:lambda-xp-runtime:2"
 ```
 
 Context

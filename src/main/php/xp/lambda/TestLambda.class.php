@@ -6,9 +6,10 @@ use util\cmd\Console;
 class TestLambda {
   use Docker;
 
-  private $path, $handler, $payload;
+  private $version, $path, $handler, $payload;
 
-  public function __construct(Path $path, string $handler, string $payload) {
+  public function __construct(string $version, Path $path, string $handler, string $payload) {
+    $this->version= $version;
     $this->path= $path->asRealpath();
     $this->handler= $handler;
     $this->payload= $payload;
@@ -16,9 +17,10 @@ class TestLambda {
 
   public function run(): int {
     $docker= $this->command();
-    $test= $this->image('test', ['runtime' => []]);
-    $payload= '"'.str_replace('"', '\\"', $this->payload).'"';
+    $test= $this->image('test', $this->version, ['runtime' => []])['test'];
+    if (null === $test) return 1;
 
+    $payload= '"'.str_replace('"', '\\"', $this->payload).'"';
     passthru("{$docker} run --rm -v {$this->path}:/var/task:ro {$test} {$this->handler} {$payload}", $result);
     return $result;
   }
