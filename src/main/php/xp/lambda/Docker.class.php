@@ -17,6 +17,7 @@ trait Docker {
 
     $rebuild ? $out= [] : exec("{$this->command()} image ls -q {$image}", $out, $result);
     if (empty($out)) {
+      $runners= substr($_ENV['XP_VERSION'], 0, strrpos($_ENV['XP_VERSION'], '.'));
 
       // Ensure dependencies exist
       foreach ($dependencies as $dependency => $transitive) {
@@ -25,7 +26,7 @@ trait Docker {
 
       // Build this
       $file= new Path(__DIR__, 'Dockerfile.'.$name);
-      passthru("{$this->command()} build -t {$image} --build-arg php_version={$version} -f {$file} .", $result);
+      passthru("{$this->command()} build -t {$image} --build-arg php_version={$version} --build-arg xp_version={$runners} -f {$file} .", $result);
     }
 
     return $image;
