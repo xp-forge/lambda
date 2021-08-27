@@ -15,7 +15,15 @@ class PackageLambda {
     $this->base= $base->asRealpath();
     $this->sources= $sources;
     $this->exclude= $exclude;
-    $this->compression= extension_loaded('zlib') ? Compression::$GZ : Compression::$NONE;
+
+    // Choose best compression algorithm based on available extensions.
+    if (extension_loaded('zlib')) {
+      $this->compression= Compression::$GZ;
+    } else if (extension_loaded('bz2')) {
+      $this->compression= Compression::$BZ;
+    } else {
+      $this->compression= Compression::$NONE;
+    }
   }
 
   /** Returns ZIP file entries */

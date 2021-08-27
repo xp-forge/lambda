@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Also support bzip2 compression if PHP extension is loaded, but keep
+  preference on gzip, which has performed better in my tests.
+  (@thekid)
+
 ## 0.7.0 / 2021-08-27
 
 * Fixed issue #3: Context object compatibility. Context now also declares
