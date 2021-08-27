@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #4: Pass version along to docker images. Use `xp lambda runtime`
+  to use the current PHP version, `xp lambda runtime:8.0` to use the newest
+  PHP 8.0 release, and `xp lambda runtime:8.0.10` for version pinning.
+  (@thekid)
 * Ignore *any* directories inside `src/test` and `src/it` as well any hidden
   directories when packaging.
   (@thekid)
