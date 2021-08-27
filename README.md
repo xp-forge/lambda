@@ -104,7 +104,7 @@ $ aws lambda invoke \
   --payload '{"name":"Timm"}'
   response.json
 $ cat response.json
-"Hello Timm from greet @ us-east-1"
+"Hello Timm from PHP 8.0.10 via greet @ us-east-1"
 ```
 
 Deploying changes
