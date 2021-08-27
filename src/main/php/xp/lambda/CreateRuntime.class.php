@@ -17,8 +17,14 @@ class CreateRuntime {
   public function run(): int {
     $docker= $this->command();
     $runtime= $this->image('runtime', $this->version, [], $this->rebuild);
-    $container= uniqid();
 
+    $code= "echo ' => PHP ', PHP_VERSION, ' & Zend ', zend_version(), ' @ ', php_uname(), PHP_EOL, ' => ', implode(' ', get_loaded_extensions()), PHP_EOL;";
+    Console::writeLine();
+    Console::writeLine("[+] Running {$runtime}\e[34m");
+    passthru("{$docker} run {$runtime} /opt/php/bin/php -r \"{$code}\"", $result);
+    Console::writeLine("\e[0m");
+
+    $container= uniqid();
     $commands= [
       "{$docker} create --name {$container} {$runtime}",
       "{$docker} cp {$container}:/opt/php/runtime.zip {$this->target}",
