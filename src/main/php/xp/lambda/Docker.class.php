@@ -12,27 +12,27 @@ trait Docker {
   }
 
   /** Returns a given docker image, building it if necessary */
-  private function image(string $name, string $version, array $dependencies= [], bool $rebuild= false) {
+  private function image(string $name, string $version, array $dependencies= [], bool $rebuild= false): array {
     $image= "lambda-xp-{$name}:{$version}";
+    $images= [$name => $image];
 
     $rebuild ? $out= [] : exec("{$this->command()} image ls -q {$image}", $out, $result);
     if (empty($out)) {
 
-      // Support 6.1.0 as well as 6.1.0.1234
+      // Support 3-digit `6.1.0` as well as 4-digit `6.1.0.1234` formats
       $runners= preg_replace('/^(\d+\.\d+\.\d+)(.*)/', '$1', $_ENV['XP_VERSION']);
 
       // Ensure dependencies exist
       foreach ($dependencies as $dependency => $transitive) {
-        $this->image($dependency, $version, $transitive);
+        $images+= $this->image($dependency, $version, $transitive, $rebuild);
       }
 
       // Build this
       $file= new Path(__DIR__, 'Dockerfile.'.$name);
       passthru("{$this->command()} build -t {$image} --build-arg php_version={$version} --build-arg xp_version={$runners} -f {$file} .", $result);
-    } else {
-      $result= 0;
+      0 === $result || $images[$name]= null;
     }
 
-    return 0 === $result ? $image : null;
+    return $images;
   }
 }

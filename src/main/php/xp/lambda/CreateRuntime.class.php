@@ -16,7 +16,13 @@ class CreateRuntime {
 
   public function run(): int {
     $docker= $this->command();
-    $runtime= $this->image('runtime', $this->version, [], $this->rebuild);
+
+    // Build test and runtime containers when -b is given
+    if ($this->rebuild) {
+      $runtime= $this->image('test', $this->version, ['runtime' => []], true)['runtime'];
+    } else {
+      $runtime= $this->image('runtime', $this->version)['runtime'];
+    }
     if (null === $runtime) return 1;
 
     // Verify runtime

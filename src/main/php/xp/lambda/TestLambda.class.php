@@ -17,7 +17,7 @@ class TestLambda {
 
   public function run(): int {
     $docker= $this->command();
-    $test= $this->image('test', $this->version, ['runtime' => []]);
+    $test= $this->image('test', $this->version, ['runtime' => []])['test'];
     if (null === $test) return 1;
 
     $payload= '"'.str_replace('"', '\\"', $this->payload).'"';
