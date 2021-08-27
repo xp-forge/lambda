@@ -1,4 +1,7 @@
-FROM lambda-xp-runtime as runtime
+ARG php_version="?.?.?"
+ARG xp_version="?.?.?"
+
+FROM lambda-xp-runtime:${php_version} as runtime
 
 FROM lambci/lambda:provided
 
