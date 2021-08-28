@@ -27,6 +27,14 @@ class Environment {
   /** Returns a path inside this environment's root path */
   public function path(string $path): Path { return new Path($this->root, $path); }
 
+  /** Returns temporary directory */
+  public function tempDir(): Path {
+    foreach (['TEMP', 'TMP', 'TMPDIR', 'TEMPDIR'] as $variant) {
+      if (isset($_ENV[$variant])) return new Path($_ENV[$variant]);
+    }
+    return new Path(sys_get_temp_dir());
+  }
+
   /**
    * Writes a trace message
    *

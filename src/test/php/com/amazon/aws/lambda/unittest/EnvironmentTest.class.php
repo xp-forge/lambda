@@ -26,6 +26,11 @@ class EnvironmentTest {
   }
 
   #[Test]
+  public function tempDir() {
+    Assert::instance(Path::class, (new Environment('.'))->tempDir());
+  }
+
+  #[Test]
   public function trace() {
     $stream= new MemoryOutputStream();
 
