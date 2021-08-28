@@ -5,6 +5,8 @@ AWS Lambda change log
 
 ## 1.1.0 / 2021-08-28
 
+* Added accessor for environment varibales, `Environment::variable()`
+  (@thekid)
 * Added accessor for temporary directory, `Environment::tempDir()`
   (@thekid)
 * Added accessor for environment root path, `Environment::taskroot()`

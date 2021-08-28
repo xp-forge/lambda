@@ -36,6 +36,16 @@ class Environment {
   }
 
   /**
+   * Returns a given environment variable
+   *
+   * @param  string $name
+   * @return ?string
+   */
+  public function variable($name) {
+    return $_ENV[$name] ?? null;
+  }
+
+  /**
    * Writes a trace message
    *
    * @param  var... $args

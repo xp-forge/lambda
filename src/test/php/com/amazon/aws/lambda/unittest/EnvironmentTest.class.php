@@ -31,6 +31,18 @@ class EnvironmentTest {
   }
 
   #[Test]
+  public function variable() {
+    $_ENV['TEST']= 'true';
+    Assert::equals('true', (new Environment('.'))->variable('TEST'));
+  }
+
+  #[Test]
+  public function non_existant_variable() {
+    unset($_ENV['TEST']);
+    Assert::null((new Environment('.'))->variable('TEST'));
+  }
+
+  #[Test]
   public function trace() {
     $stream= new MemoryOutputStream();
 
