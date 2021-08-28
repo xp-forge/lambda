@@ -8,13 +8,17 @@ use text\json\{Json, StreamInput};
  * XP AWS Lambda
  * =============
  *
- * - Store runtime layer as `runtime.zip`, building if necessary:
+ * - Store runtime layer as `runtime-X.X.X.zip`, building if necessary:
  *   ```sh
  *   $ xp lambda runtime
  *   ```
  * - Rebuild runtime:
  *   ```sh
  *   $ xp lambda runtime -b
+ *   ```
+ * - Speficy runtime version, selecting newest PHP 8.0 release:
+ *   ```sh
+ *   $ xp lambda runtime:8.0
  *   ```
  * - Test lambda:
  *   ```sh
@@ -24,7 +28,7 @@ use text\json\{Json, StreamInput};
  *   ```sh
  *   $ xp lambda package Greet.class.php
  *   ```
- * This command requires Docker to be installed!
+ * The `runtime` and `test` commands require Docker to be installed!
  */
 class Runner {
   const PHP_RELEASES = 'https://www.php.net/releases/';
