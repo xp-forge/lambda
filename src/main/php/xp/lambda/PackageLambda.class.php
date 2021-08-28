@@ -29,7 +29,7 @@ class PackageLambda {
   private function entries(Path $path) {
     if (preg_match($this->exclude, $path->toString('/'))) return;
 
-    $relative= trim(str_replace($this->sources->base, '', $path), DIRECTORY_SEPARATOR);
+    $relative= $path->relativeTo($this->sources->base);
     if ($path->isFile()) {
       yield function($z) use($relative, $path) {
         $file= $z->add(new ZipFileEntry($relative));
