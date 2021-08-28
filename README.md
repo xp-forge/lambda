@@ -172,7 +172,7 @@ public class com.amazon.aws.lambda.Context implements lang.Value {
 
 Lambda
 ------
-Instead of functions, a handler's *target()* method may also return instances of the *Lambda* class:
+Instead of functions, a handler's *target()* method may also return instances implementing the *Lambda* interface:
 
 ```php
 public interface com.amazon.aws.lambda.Lambda {
