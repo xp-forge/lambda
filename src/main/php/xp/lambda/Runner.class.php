@@ -52,7 +52,7 @@ class Runner {
   private static function command(string $name, array $args): object {
     sscanf($name, "%[^:]:%[^\r]", $command, $version);
     switch ($command) {
-      case 'package': return new PackageLambda(new Path('function.zip'), new Path('.'), [...$args, 'src', 'vendor']);
+      case 'package': return new PackageLambda(new Path('function.zip'), new Sources(new Path('.'), [...$args, 'src', 'vendor']));
       case 'runtime': return new CreateRuntime(self::resolve($version), new Path('runtime-%s.zip'), in_array('-b', $args));
       case 'test': return new TestLambda(self::resolve($version), new Path('.'), $args[0] ?? 'Handler', $args[1] ?? '{}');
       default: return new DisplayError('Unknown command "'.$args[0].'"');

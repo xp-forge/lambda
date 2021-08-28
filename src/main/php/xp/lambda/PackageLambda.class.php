@@ -8,11 +8,10 @@ use util\cmd\Console;
 class PackageLambda {
   const COMPRESSION_THRESHOLD = 24;
 
-  private $target, $sources, $base, $exclude, $compression;
+  private $target, $sources, $exclude, $compression;
 
-  public function __construct(Path $target, Path $base, array $sources, string $exclude= '#(^|/)(\..+|src/test|src/it)(/|$)#') {
+  public function __construct(Path $target, Sources $sources, string $exclude= '#(^|/)(\..+|src/test|src/it)(/|$)#') {
     $this->target= $target;
-    $this->base= $base->asRealpath();
     $this->sources= $sources;
     $this->exclude= $exclude;
 
@@ -30,7 +29,7 @@ class PackageLambda {
   private function entries(Path $path) {
     if (preg_match($this->exclude, $path->toString('/'))) return;
 
-    $relative= trim(str_replace($this->base, '', $path), DIRECTORY_SEPARATOR);
+    $relative= trim(str_replace($this->sources->base, '', $path), DIRECTORY_SEPARATOR);
     if ($path->isFile()) {
       yield function($z) use($relative, $path) {
         $file= $z->add(new ZipFileEntry($relative));
@@ -53,8 +52,10 @@ class PackageLambda {
   public function run(): int {
     Console::writeLine('[+] Creating ', $this->target, ' (compression: ', $this->compression, ')');
     $z= ZipFile::create($this->target->asFile()->out());
-    foreach ($this->sources as $i => $source) {
-      Console::writef("\e[34m => [%d/%d] ", $i + 1, sizeof($this->sources) + 1);
+
+    $sources= [...$this->sources];
+    foreach ($sources as $i => $source) {
+      Console::writef("\e[34m => [%d/%d] ", $i + 1, sizeof($sources) + 1);
       $entries= 0;
       foreach ($this->entries(new Path($source)) as $action) {
         $entry= $action($z);
@@ -66,7 +67,7 @@ class PackageLambda {
 
     $file= $z->add(new ZipFileEntry('class.pth'));
     $file->out()->write(preg_replace($this->exclude.'m', '?$1', file_get_contents('class.pth')));
-    Console::writeLinef("\e[34m => [%1\$d/%1\$d] class.pth\e[0m", sizeof($this->sources) + 1);
+    Console::writeLinef("\e[34m => [%1\$d/%1\$d] class.pth\e[0m", sizeof($sources) + 1);
 
     $z->close();
     Console::writeLine();
