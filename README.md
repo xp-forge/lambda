@@ -34,7 +34,7 @@ class Greet extends Handler {
 
 The two parameters passed are *$event* (a value [depending on where the lambda was invoked from](https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html)) and *$context* (a Context instance, see [below](https://github.com/xp-forge/lambda#context)).
 
-If you need to run any initialization code, you can do before returning the lambda from *target()*. This code is only run once during the initialization phase.
+If you need to run any initialization code, you can do before returning the lambda from *target()*. This code is only run once during the initialization phase. It has access to the lambda's environment via *$this->environment* (an Environment instance, see [below](https://github.com/xp-forge/lambda#environment)).
 
 Development
 -----------
@@ -167,6 +167,27 @@ public class com.amazon.aws.lambda.Context implements lang.Value {
   public function toString(): string
   public function hashCode(): string
   public function compareTo(var $value): int
+}
+```
+
+Environment
+-----------
+The runtime environment is defined as follows:
+
+```php
+public class com.amazon.aws.lambda.Environment {
+  public string $root
+  public io.streams.StringWriter $writer
+  public util.PropertySource $properties
+
+  public function __construct(string $root, ?io.streams.StringWriter $writer)
+
+  public function taskroot(): io.Path
+  public function path(string $path): io.Path
+  public function tempDir(): io.Path
+  public function variable(string $name): ?string
+  public function trace(var... $args): void
+  public function properties(string $name): util.PropertyAccess
 }
 ```
 
