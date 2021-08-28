@@ -16,6 +16,11 @@ class EnvironmentTest {
   }
 
   #[Test]
+  public function taskroot() {
+    Assert::equals(new Path('.'), (new Environment('.'))->taskroot());
+  }
+
+  #[Test]
   public function path() {
     Assert::equals(new Path('./etc'), (new Environment('.'))->path('etc'));
   }

@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 1.1.0 / 2021-08-28
+
+* Added accessor for environment root path, `Environment::taskroot()`
+  (@thekid)
+
 ## 1.0.0 / 2021-08-28
 
 * Merged PR #5: Unique given sources, preventing them being added to the

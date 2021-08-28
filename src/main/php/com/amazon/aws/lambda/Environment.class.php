@@ -21,10 +21,11 @@ class Environment {
     $this->properties= new FilesystemPropertySource($root);
   }
 
+  /** Returns this environment's root path */
+  public function taskroot(): Path { return new Path($this->root); }
+
   /** Returns a path inside this environment's root path */
-  public function path(string $path): Path {
-    return new Path($this->root, $path);
-  }
+  public function path(string $path): Path { return new Path($this->root, $path); }
 
   /**
    * Writes a trace message
