@@ -170,6 +170,16 @@ public class com.amazon.aws.lambda.Context implements lang.Value {
 }
 ```
 
+Lambda
+------
+Instead of functions, a handler's *target()* method may also return instances of the *Lambda* class:
+
+```php
+public interface com.amazon.aws.lambda.Lambda {
+  public function process(var $event, com.amazon.aws.lambda.Context $context): var
+}
+```
+
 See also
 --------
 * [What is AWS Lambda?](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
