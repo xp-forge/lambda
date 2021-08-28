@@ -1,7 +1,7 @@
 <?php namespace xp\lambda;
 
 use io\Path;
-use io\archive\zip\{ZipFile, ZipDirEntry, ZipFileEntry, Compression};
+use io\archive\zip\{ZipFile, ZipArchiveWriter, ZipDirEntry, ZipFileEntry, Compression};
 use io\streams\StreamTransfer;
 use util\cmd\Console;
 
@@ -25,26 +25,24 @@ class PackageLambda {
     }
   }
 
-  /** Returns ZIP file entries */
-  private function entries(Path $path) {
+  /** Adds ZIP file entries */
+  private function add(ZipArchiveWriter $zip, Path $path) {
     if (preg_match($this->exclude, $path->toString('/'))) return;
 
     $relative= $path->relativeTo($this->sources->base);
     if ($path->isFile()) {
-      yield function($z) use($relative, $path) {
-        $file= $z->add(new ZipFileEntry($relative));
+      $file= $zip->add(new ZipFileEntry($relative));
 
-        // See https://stackoverflow.com/questions/46716095/minimum-file-size-for-compression-algorithms
-        if (filesize($path) > self::COMPRESSION_THRESHOLD) {
-          $file->setCompression($this->compression, 9);
-        }
-        (new StreamTransfer($path->asFile()->in(), $file->out()))->transferAll();
-        return $file;
-      };
+      // See https://stackoverflow.com/questions/46716095/minimum-file-size-for-compression-algorithms
+      if (filesize($path) > self::COMPRESSION_THRESHOLD) {
+        $file->setCompression($this->compression, 9);
+      }
+      (new StreamTransfer($path->asFile()->in(), $file->out()))->transferAll();
+      yield $file;
     } else {
-      yield function($z) use($relative) { return $z->add(new ZipDirEntry($relative)); };
+      yield $zip->add(new ZipDirEntry($relative));
       foreach ($path->asFolder()->entries() as $entry) {
-        yield from $this->entries($entry);
+        yield from $this->add($zip, $entry);
       }
     }
   }
@@ -58,8 +56,7 @@ class PackageLambda {
     foreach ($sources as $i => $source) {
       Console::writef("\e[34m => [%d/%d] ", $i + 1, $total);
       $entries= 0;
-      foreach ($this->entries(new Path($source)) as $action) {
-        $entry= $action($z);
+      foreach ($this->add($z, new Path($source)) as $entry) {
         $entries++;
         Console::writef('%-60s %4d%s', substr($entry->getName(), -60), $entries, str_repeat("\x08", 65));
       }
