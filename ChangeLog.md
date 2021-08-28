@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 1.0.0 / 2021-08-28
+
+* Merged PR #5: Unique given sources, preventing them being added to the
+  ZIP file twice
+  (@thekid)
 * Also support bzip2 compression if PHP extension is loaded, but keep
   preference on gzip, which has performed better in my tests.
   (@thekid)
