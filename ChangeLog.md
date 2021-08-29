@@ -5,6 +5,8 @@ AWS Lambda change log
 
 ## 2.0.0 / 2021-08-29
 
+* Fixed `Context::remainingTime()`'s return type, which can include NULL.
+  (@thekid)
 * Changed packaging to no longer include `src` directory automatically,
   it might contain static resources like e.g. a web application's images.
   Typically, `xp lambda package src/main/php` will be what you want.

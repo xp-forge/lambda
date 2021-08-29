@@ -163,7 +163,7 @@ public class com.amazon.aws.lambda.Context implements lang.Value {
 
   public function __construct(array $headers, array $environment)
 
-  public function remainingTime(?float $microtime): float
+  public function remainingTime(?float $now): ?float
   public function toString(): string
   public function hashCode(): string
   public function compareTo(var $value): int

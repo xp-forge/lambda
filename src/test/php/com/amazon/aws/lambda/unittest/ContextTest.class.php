@@ -10,7 +10,7 @@ class ContextTest {
     'Lambda-Runtime-Trace-Id'             => ['Root=1-dc99d00f-c079a84d433534434534ef0d;Parent=91ed514f1e5c03b2;Sampled=1'],
     'Lambda-Runtime-Client-Context'       => null,
     'Lambda-Runtime-Cognito-Identity'     => null,
-    'Lambda-Runtime-Deadline-Ms'          => ['1629390182479'],
+    'Lambda-Runtime-Deadline-Ms'          => null,
   ];
   private $environment= [
     'AWS_LAMBDA_FUNCTION_NAME'        => 'test',
@@ -73,18 +73,39 @@ class ContextTest {
   }
 
   #[Test]
+  public function remainingTime_null_when_deadline_missing() {
+    Assert::null((new Context($this->headers))->remainingTime());
+  }
+
+  #[Test]
   public function remainingTime_accessor() {
-    Assert::equals(
-      180.2,
-      round((new Context($this->headers))->remainingTime(1629390002.279), 1)
-    );
+    $context= new Context(['Lambda-Runtime-Deadline-Ms' => ['1629390182479']] + $this->headers);
+    Assert::equals(180.2, round($context->remainingTime(1629390002.279), 1));
   }
 
   #[Test]
   public function string_representation_is_not_empty() {
+    Assert::notEquals('', (new Context($this->headers, $this->environment))->toString());
+  }
+
+  #[Test]
+  public function hashcode_is_not_empty() {
+    Assert::notEquals('', (new Context($this->headers, $this->environment))->hashCode());
+  }
+
+  #[Test]
+  public function equals_with_same_content() {
+    Assert::equals(
+      new Context($this->headers, $this->environment),
+      new Context($this->headers, $this->environment)
+    );
+  }
+
+  #[Test]
+  public function does_not_equal_different_content() {
     Assert::notEquals(
-      '',
-      (new Context($this->headers, $this->environment))->toString()
+      new Context($this->headers, $this->environment),
+      new Context($this->headers + ['Content-Length' => ['6100']], $this->environment)
     );
   }
 }

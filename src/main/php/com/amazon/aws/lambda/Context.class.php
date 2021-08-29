@@ -38,11 +38,16 @@ class Context implements Value {
     $this->payloadLength= cast($headers['Content-Length'][0] ?? null, '?int');
   }
 
-  /** Returns remaining time in seconds */
-  public function remainingTime(float $microtime= null): float {
+  /**
+   * Returns remaining time in seconds, or NULL if no deadline was set.
+   *
+   * @param  ?float $now If omitted, uses `microtime()`
+   * @return ?float
+   */
+  public function remainingTime($now= null) {
     return null === $this->deadline
       ? null
-      : ($this->deadline / 1000) - ($microtime ?? microtime(true))
+      : ($this->deadline / 1000) - ($now ?? microtime(true))
     ;
   }
 
