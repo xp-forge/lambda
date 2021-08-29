@@ -5,6 +5,8 @@ AWS Lambda change log
 
 ## 2.0.0 / 2021-08-29
 
+* Increased code coverage for classes in public API to 100%, see issue #6
+  (@thekid)
 * Fixed `Context::remainingTime()`'s return type, which can include NULL.
   (@thekid)
 * Changed packaging to no longer include `src` directory automatically,
