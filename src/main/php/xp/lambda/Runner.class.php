@@ -24,11 +24,16 @@ use text\json\{Json, StreamInput};
  *   ```sh
  *   $ xp lambda test Greet '{"name":"Test"}'
  *   ```
- * - Package `function.zip` file for deployment, including `src` and `vendor`:
+ * - Package single file in `function.zip` file for deployment:
  *   ```sh
  *   $ xp lambda package Greet.class.php
  *   ```
+ * - Package INI file and source directory in `function.zip`:
+ *   ```sh
+ *   $ xp lambda package task.ini src/main/php
+ *   ```
  * The `runtime` and `test` commands require Docker to be installed!
+ * Packaging will always include the `vendor` directory automatically.
  */
 class Runner {
   const PHP_RELEASES = 'https://www.php.net/releases/';
@@ -56,7 +61,7 @@ class Runner {
   private static function command(string $name, array $args): object {
     sscanf($name, "%[^:]:%[^\r]", $command, $version);
     switch ($command) {
-      case 'package': return new PackageLambda(new Path('function.zip'), new Sources(new Path('.'), [...$args, 'src', 'vendor']));
+      case 'package': return new PackageLambda(new Path('function.zip'), new Sources(new Path('.'), [...$args, 'vendor']));
       case 'runtime': return new CreateRuntime(self::resolve($version), new Path('runtime-%s.zip'), in_array('-b', $args));
       case 'test': return new TestLambda(self::resolve($version), new Path('.'), $args[0] ?? 'Handler', $args[1] ?? '{}');
       default: return new DisplayError('Unknown command "'.$args[0].'"');

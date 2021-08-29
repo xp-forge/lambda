@@ -3,6 +3,13 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 2.0.0 / 2021-08-29
+
+* Changed packaging to no longer include `src` directory automatically,
+  it might contain static resources like e.g. a web application's images.
+  Typically, `xp lambda package src/main/php` will be what you want.
+  (@thekid)
+
 ## 1.1.0 / 2021-08-28
 
 * Added accessor for environment varibales, `Environment::variable()`
