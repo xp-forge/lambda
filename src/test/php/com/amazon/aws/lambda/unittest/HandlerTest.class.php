@@ -19,6 +19,15 @@ class HandlerTest {
   }
 
   #[Test]
+  public function environment_accessor() {
+    $env= new Environment('.');
+    $fixture= new class($env) extends Handler {
+      public function target() { /* TBI */ }
+    };
+    Assert::equals($env, $fixture->environment());
+  }
+
+  #[Test]
   public function return_function() {
     $fixture= new class(new Environment('.')) extends Handler {
       public function target() {
