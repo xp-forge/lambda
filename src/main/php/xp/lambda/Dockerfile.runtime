@@ -32,7 +32,7 @@ RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
   --disable-xml \
   --disable-xmlreader \
   --disable-xmlwriter && \
-  make all install
+  make -j $(nproc) all install
 
 # Create XP Bootstrap
 RUN curl -L https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/e/entrypoint/xp-run-${xp_version}.sh \
