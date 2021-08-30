@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 2.1.0 / 2021-08-30
+
 * Speed up build by using `-j $(nproc)` flag for `make`, see #7 - @thekid
 * Enabled *bcmath* extension - @thekid
 
