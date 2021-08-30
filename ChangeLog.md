@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Enabled *bcmath* extension - @thekid
+
 ## 2.0.0 / 2021-08-29
 
 * Increased code coverage for classes in public API to 100%, see issue #6

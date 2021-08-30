@@ -25,6 +25,7 @@ RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
   --without-libxml \
   --without-sqlite3 \
   --with-openssl \
+  --enable-bcmath \
   --disable-pdo \
   --disable-dom \
   --disable-simplexml \
