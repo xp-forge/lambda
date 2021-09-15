@@ -1,7 +1,7 @@
 <?php namespace xp\lambda;
 
 use io\Path;
-use lang\{Process, CommandLine};
+use lang\CommandLine;
 
 trait Docker {
   private $command= null;
@@ -49,7 +49,7 @@ trait Docker {
 
   /** Returns docker runtime */
   private function command() {
-    return $this->command ?? $this->command= CommandLine::forName(PHP_OS)->compose($this->resolve(['docker', 'podman']), []);
+    return $this->command ?? $this->command= CommandLine::forName(PHP_OS)->compose($this->resolve(['docker', 'podman']));
   }
 
   /** Returns a given docker image, building it if necessary */
