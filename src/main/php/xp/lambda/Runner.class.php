@@ -32,7 +32,7 @@ use text\json\{Json, StreamInput};
  *   ```sh
  *   $ xp lambda package task.ini src/main/php
  *   ```
- * The `runtime` and `test` commands require Docker to be installed!
+ * The `runtime` and `test` commands require Docker or Podman to be installed!
  * Packaging will always include the `vendor` directory automatically.
  */
 class Runner {

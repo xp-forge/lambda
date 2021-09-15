@@ -6,9 +6,50 @@ use lang\{Process, CommandLine};
 trait Docker {
   private $command= null;
 
+  /**
+   * Resolves a list of commands.
+   *
+   * @param  string $command
+   * @return string
+   * @throws lang.IllegalStateException
+   */
+  private function resolve($commands) {
+    foreach ($commands as $command) {
+
+      // PATHEXT is in form ".{EXT}[;.{EXT}[;...]]"
+      $extensions= [''] + explode(PATH_SEPARATOR, getenv('PATHEXT'));
+      clearstatcache();
+
+      // If the command is in fully qualified form and refers to a file
+      // that does not exist (e.g. "C:\DoesNotExist.exe", "\DoesNotExist.com"
+      // or /usr/bin/doesnotexist), do not attempt to search for it.
+      if ((DIRECTORY_SEPARATOR === $command[0]) || ((strncasecmp(PHP_OS, 'Win', 3) === 0) &&
+        strlen($command) > 1 && (':' === $command[1] || '/' === $command[0])
+      )) {
+        foreach ($extensions as $ext) {
+          $q= $command.$ext;
+          if (file_exists($q) && !is_dir($q)) return realpath($q);
+        }
+        continue;
+      }
+
+      // Check the PATH environment setting for possible locations of the
+      // executable if its name is not a fully qualified path name.
+      $paths= explode(PATH_SEPARATOR, getenv('PATH'));
+      foreach ($paths as $path) {
+        foreach ($extensions as $ext) {
+          $q= $path.DIRECTORY_SEPARATOR.$command.$ext;
+          if (file_exists($q) && !is_dir($q)) return realpath($q);
+        }
+      }
+    }
+
+    throw new IllegalStateException('Cannot find any of '.implode(', ', $commands));
+  }
+
   /** Returns docker runtime */
   private function command() {
-    return $this->command ?? $this->command= CommandLine::forName(PHP_OS)->compose(Process::resolve('docker'), []);
+    return $this->command ?? $this->command= CommandLine::forName(PHP_OS)->compose($this->resolve(['docker', 'podman']), []);
   }
 
   /** Returns a given docker image, building it if necessary */

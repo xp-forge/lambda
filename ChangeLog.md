@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 2.2.0 / 2021-09-15
+
+* Implemented feature request #9: Add podman support - @thekid
+
 ## 2.1.1 / 2021-09-15
 
 * Fixed issue #10: lang.IndexOutOfBoundsException (Undefined index: XP_VERSION)
