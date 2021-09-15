@@ -17,7 +17,7 @@ trait Docker {
     clearstatcache();
 
     // PATHEXT is in form ".{EXT}[;.{EXT}[;...]]"
-    $extensions= [''] + explode(PATH_SEPARATOR, getenv('PATHEXT'));
+    $extensions= array_merge([''], explode(PATH_SEPARATOR, getenv('PATHEXT')));
     $paths= $paths= explode(PATH_SEPARATOR, getenv('PATH'));
     foreach ($commands as $command) {
 
