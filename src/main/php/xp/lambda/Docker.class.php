@@ -20,7 +20,7 @@ trait Docker {
     if (empty($out)) {
 
       // Support 3-digit `6.1.0` as well as 4-digit `6.1.0.1234` formats
-      $runners= preg_replace('/^(\d+\.\d+\.\d+)(.*)/', '$1', $_ENV['XP_VERSION']);
+      $runners= preg_replace('/^(\d+\.\d+\.\d+)(.*)/', '$1', getenv('XP_VERSION'));
 
       // Ensure dependencies exist
       foreach ($dependencies as $dependency => $transitive) {

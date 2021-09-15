@@ -15,8 +15,9 @@ class Environment {
   public $root, $writer, $properties;
 
   /** Creates a new environment */
-  public function __construct(string $root, StringWriter $writer= null) {
+  public function __construct(string $root, StringWriter $writer= null, array $variables= null) {
     $this->root= $root;
+    $this->variables= $variables ?? (PHP_VERSION_ID >= 70100 ? getenv() : $_SERVER);
     $this->writer= $writer ?? Console::$out;
     $this->properties= new FilesystemPropertySource($root);
   }
@@ -29,8 +30,8 @@ class Environment {
 
   /** Returns temporary directory */
   public function tempDir(): Path {
-    foreach (['TEMP', 'TMP', 'TMPDIR', 'TEMPDIR'] as $variant) {
-      if (isset($_ENV[$variant])) return new Path($_ENV[$variant]);
+    foreach (['TEMP', 'TMP', 'TMPDIR', 'TEMPDIR'] as $variable) {
+      if (isset($this->variables[$variable])) return new Path($this->variables[$variable]);
     }
     return new Path(sys_get_temp_dir());
   }
@@ -42,7 +43,7 @@ class Environment {
    * @return ?string
    */
   public function variable($name) {
-    return $_ENV[$name] ?? null;
+    return $this->variables[$name] ?? null;
   }
 
   /**

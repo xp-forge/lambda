@@ -3,7 +3,7 @@
 use Throwable;
 use com\amazon\aws\lambda\{Context, Environment};
 use io\IOException;
-use lang\{XPClass, XPException};
+use lang\{XPClass, XPException, Environment as System};
 use peer\http\{HttpConnection, RequestData};
 use text\json\{Json, StreamInput};
 use util\cmd\Console;
@@ -16,13 +16,19 @@ use util\cmd\Console;
 class AwsRunner {
 
   /**
-   * Returns the lambda handler class using the `_HANDLER` environment
-   * variable.
+   * Returns the lambda handler instance using the `_HANDLER` and
+   * `LAMBDA_TASK_ROOT` environment variables.
    *
-   * @return lang.XPClass
+   * @param  [:string] $environment
+   * @param  io.streams.StringWriter $writer
+   * @return com.amazon.aws.lambda.Handler
    */
-  private static function handler() {
-    return XPClass::forName($_ENV['_HANDLER']);
+  private static function handler($environment, $writer) {
+    return XPClass::forName($environment['_HANDLER'])->newInstance(new Environment(
+      $environment['LAMBDA_TASK_ROOT'] ?? '.',
+      $writer,
+      $environment
+    ));
   }
 
   /**
@@ -30,11 +36,12 @@ class AwsRunner {
    * environment variable.
    *
    * @see    https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html
+   * @param  [:string] $environment
    * @param  string $path
    * @return peer.http.HttpConnection
    */
-  private static function endpoint($path) {
-    $c= new HttpConnection("http://{$_ENV['AWS_LAMBDA_RUNTIME_API']}/2018-06-01/runtime/{$path}");
+  private static function endpoint($environment, $path) {
+    $c= new HttpConnection("http://{$environment['AWS_LAMBDA_RUNTIME_API']}/2018-06-01/runtime/{$path}");
 
     // Use a 15 minute timeout, this is the maximum lambda runtime, see
     // https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
@@ -95,12 +102,13 @@ class AwsRunner {
    * @return int
    */
   public static function main($args) {
+    $environment= System::variables();
 
     // Initialization
     try {
-      $lambda= self::handler()->newInstance(new Environment($_ENV['LAMBDA_TASK_ROOT'], Console::$out))->lambda();
+      $lambda= self::handler($environment, Console::$out)->lambda();
     } catch (Throwable $t) {
-      self::endpoint('init/error')->post(
+      self::endpoint($environment, 'init/error')->post(
         new RequestData(self::error($t)),
         ['Content-Type' => 'application/json']
       );
@@ -110,13 +118,13 @@ class AwsRunner {
     // Process events using the lambda runtime interface
     do {
       try {
-        $r= self::endpoint('invocation/next')->get();
+        $r= self::endpoint($environment, 'invocation/next')->get();
       } catch (IOException $e) {
         Console::$err->writeLine($e);
         break;
       }
 
-      $context= new Context($r->headers(), $_ENV);
+      $context= new Context($r->headers(), $environment);
       try {
         $event= 0 === $context->payloadLength ? null : self::read($r->in());
 
@@ -127,7 +135,7 @@ class AwsRunner {
         $response= self::error($t);
       }
 
-      self::endpoint("invocation/{$context->awsRequestId}/{$type}")->post(
+      self::endpoint($environment, "invocation/{$context->awsRequestId}/{$type}")->post(
         new RequestData($response),
         ['Content-Type' => 'application/json']
       );

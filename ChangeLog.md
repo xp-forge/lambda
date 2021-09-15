@@ -3,6 +3,12 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 2.1.1 / 2021-09-15
+
+* Fixed issue #10: lang.IndexOutOfBoundsException (Undefined index: XP_VERSION)
+  on systems where the PHP *variables_order* setting does not include `E`.
+  (@thekid)
+
 ## 2.1.0 / 2021-08-30
 
 * Sped up build by using `-j $(nproc)` flag for `make`, see #7 - @thekid
