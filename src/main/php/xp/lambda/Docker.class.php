@@ -14,11 +14,12 @@ trait Docker {
    * @throws lang.IllegalStateException
    */
   private function resolve($commands) {
-    foreach ($commands as $command) {
+    clearstatcache();
 
-      // PATHEXT is in form ".{EXT}[;.{EXT}[;...]]"
-      $extensions= [''] + explode(PATH_SEPARATOR, getenv('PATHEXT'));
-      clearstatcache();
+    // PATHEXT is in form ".{EXT}[;.{EXT}[;...]]"
+    $extensions= [''] + explode(PATH_SEPARATOR, getenv('PATHEXT'));
+    $paths= $paths= explode(PATH_SEPARATOR, getenv('PATH'));
+    foreach ($commands as $command) {
 
       // If the command is in fully qualified form and refers to a file
       // that does not exist (e.g. "C:\DoesNotExist.exe", "\DoesNotExist.com"
@@ -35,7 +36,6 @@ trait Docker {
 
       // Check the PATH environment setting for possible locations of the
       // executable if its name is not a fully qualified path name.
-      $paths= explode(PATH_SEPARATOR, getenv('PATH'));
       foreach ($paths as $path) {
         foreach ($extensions as $ext) {
           $q= $path.DIRECTORY_SEPARATOR.$command.$ext;
