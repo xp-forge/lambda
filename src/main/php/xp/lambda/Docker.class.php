@@ -7,9 +7,11 @@ trait Docker {
   private $command= null;
 
   /**
-   * Resolves a list of commands.
+   * Resolves a list of commands. Copy of `lang.Process::resolve()` from
+   * XP 10.14 in order to be compatible with older XP versions.
    *
-   * @param  string $command
+   * @see    https://github.com/xp-framework/core/pull/279
+   * @param  string[] $commands
    * @return string
    * @throws lang.IllegalStateException
    */
