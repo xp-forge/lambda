@@ -2,7 +2,7 @@
 
 use io\Path;
 use io\streams\StringWriter;
-use lang\ElementNotFoundException;
+use lang\{ElementNotFoundException, Environment as System};
 use util\cmd\Console;
 use util\{FilesystemPropertySource, PropertyAccess};
 
@@ -17,7 +17,7 @@ class Environment {
   /** Creates a new environment */
   public function __construct(string $root, StringWriter $writer= null, array $variables= null) {
     $this->root= $root;
-    $this->variables= $variables ?? (PHP_VERSION_ID >= 70100 ? getenv() : $_SERVER);
+    $this->variables= $variables ?? System::variables();
     $this->writer= $writer ?? Console::$out;
     $this->properties= new FilesystemPropertySource($root);
   }
