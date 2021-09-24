@@ -14,6 +14,7 @@ RUN yum clean all && yum install -y \
   re2c \
   openssl-devel \
   libxml2-devel \
+  oniguruma-devel \
   tar \
   zip \
   bison-3.0.4-2.el7.x86_64.rpm
@@ -25,6 +26,7 @@ RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
   --prefix=/opt/php/ \
   --without-sqlite3 \
   --with-openssl \
+  --enable-mbstring \
   --enable-bcmath \
   --disable-simplexml \
   --disable-pdo && \
