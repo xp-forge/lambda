@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 2.3.0 / 2021-09-24
+
 * Merged PR #11: Enable XML extensions. The PHP extensions dom, libxml,
   xml, xmlreader and xmlwriter are now available. See discussion in #8
   (@thekid)
