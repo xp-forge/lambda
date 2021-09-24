@@ -9,4 +9,8 @@ COPY --from=runtime /opt/php/bin/ /opt/bin/
 
 COPY --from=runtime /opt/php/bootstrap /opt/bootstrap
 
+COPY --from=runtime /usr/lib64/libonig.so.2 /opt/bin
+
+ENV LD_LIBRARY_PATH=/opt/bin/
+
 ENV TZ UTC
