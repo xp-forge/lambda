@@ -3,6 +3,12 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 3.0.0 / 2021-09-26
+
+* Merged PR #13: Refactor container execution to Process API provided by
+  XP 10.14. Drops BC with XP 9 and lower, see xp-framework/rfc#341.
+  (@thekid)
+
 ## 2.3.0 / 2021-09-24
 
 * Merged PR #11: Enable XML extensions. The PHP extensions dom, libxml,
