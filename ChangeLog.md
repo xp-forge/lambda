@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 3.0.1 / 2021-10-21
+
+* Made library compatible with XP 11, newer `xp-framework/zip` library
+  (@thekid)
+
 ## 3.0.0 / 2021-09-26
 
 * Merged PR #13: Refactor container execution to Process API provided by
