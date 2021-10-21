@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 3.0.2 / 2021-10-21
+
+* Made library compatible with new major release of `xp-forge/json`
+  (@thekid)
+
 ## 3.0.1 / 2021-10-21
 
 * Made library compatible with XP 11, newer `xp-framework/zip` library
