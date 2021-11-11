@@ -3,6 +3,12 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 2.4.0 / 2021-11-11
+
+* Enabled SimpleXML extension in order to be able to support AWS SDK
+  see https://github.com/xp-forge/lambda/issues/8#issuecomment-966308720
+  (@thekid)
+
 ## 2.3.0 / 2021-09-24
 
 * Merged PR #11: Enable XML extensions. The PHP extensions dom, libxml,
