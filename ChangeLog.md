@@ -7,6 +7,7 @@ AWS Lambda change log
 
 * Enabled SimpleXML extension in order to be able to support AWS SDK
   see https://github.com/xp-forge/lambda/issues/8#issuecomment-966308720
+  (@thekid)
 
 ## 3.0.2 / 2021-10-21
 
