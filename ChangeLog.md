@@ -3,10 +3,25 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
-## 2.4.0 / 2021-11-11
+## 3.1.0 / 2021-11-11
 
 * Enabled SimpleXML extension in order to be able to support AWS SDK
   see https://github.com/xp-forge/lambda/issues/8#issuecomment-966308720
+
+## 3.0.2 / 2021-10-21
+
+* Made library compatible with new major release of `xp-forge/json`
+  (@thekid)
+
+## 3.0.1 / 2021-10-21
+
+* Made library compatible with XP 11, newer `xp-framework/zip` library
+  (@thekid)
+
+## 3.0.0 / 2021-09-26
+
+* Merged PR #13: Refactor container execution to Process API provided by
+  XP 10.14. Drops BC with XP 9 and lower, see xp-framework/rfc#341.
   (@thekid)
 
 ## 2.3.0 / 2021-09-24
