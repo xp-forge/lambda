@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 3.2.0 / 2021-11-15
+
+* Merged PR #14: Add ability to pass environment variables to tested lambda
+  (@thekid)
+
 ## 3.1.0 / 2021-11-11
 
 * Enabled SimpleXML extension in order to be able to support AWS SDK
