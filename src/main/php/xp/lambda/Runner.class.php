@@ -24,6 +24,10 @@ use text\json\{Json, StreamInput};
  *   ```sh
  *   $ xp lambda test Greet '{"name":"Test"}'
  *   ```
+ * - Test lambda, pass environment variables:
+ *   ```sh
+ *   $ xp lambda test -e PROFILE=prod Audit
+ *   ```
  * - Package single file in `function.zip` file for deployment:
  *   ```sh
  *   $ xp lambda package Greet.class.php
@@ -63,7 +67,7 @@ class Runner {
     switch ($command) {
       case 'package': return new PackageLambda(new Path('function.zip'), new Sources(new Path('.'), [...$args, 'vendor']));
       case 'runtime': return new CreateRuntime(self::resolve($version), new Path('runtime-%s.zip'), in_array('-b', $args));
-      case 'test': return new TestLambda(self::resolve($version), new Path('.'), $args[0] ?? 'Handler', $args[1] ?? '{}');
+      case 'test': return new TestLambda(self::resolve($version), new Path('.'), $args);
       default: return new DisplayError('Unknown command "'.$args[0].'"');
     }
   }

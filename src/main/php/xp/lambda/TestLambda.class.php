@@ -6,19 +6,50 @@ use util\cmd\Console;
 class TestLambda {
   use Docker;
 
-  private $version, $path, $handler, $payload;
+  private $version, $path;
+  private $environment= [];
+  private $handler= 'Handler';
+  private $payload= '{}';
 
-  public function __construct(string $version, Path $path, string $handler, string $payload) {
+  public function __construct(string $version, Path $path, array $args) {
     $this->version= $version;
     $this->path= $path->asRealpath();
-    $this->handler= $handler;
-    $this->payload= $payload;
+
+    // Separate `-e NAME=VALUE` from handler and payload
+    for ($i= 0, $s= sizeof($args); $i < $s; $i++) {
+      if ('-e' === $args[$i]) {
+        $this->environment[]= $args[++$i];
+      } else {
+        $this->handler= $args[$i];
+        $this->payload= $args[++$i] ?? '{}';
+        break;
+      }
+    }
   }
 
-  public function run(): int {
-    $test= $this->image('test', $this->version, ['runtime' => []])['test'];
-    if (null === $test) return 1;
+  /** Passes multiple arguments via command line */
+  private function pass($flag, $list) {
+    $r= [];
+    foreach ($list as $element) {
+      $r[]= $flag;
+      $r[]= $element;
+    }
+    return $r;
+  }
 
-    return $this->passthru(['run', '--rm', '-v', "{$this->path}:/var/task:ro", $test, $this->handler, $this->payload]);
+  /** Runs this command */
+  public function run(): int {
+    $image= $this->image('test', $this->version, ['runtime' => []])['test'];
+    if (null === $image) return 1;
+
+    return $this->passthru([
+      'run',
+      '--rm',
+      '-v', "{$this->path}:/var/task:ro",
+      ...$this->pass('-e', $this->environment),
+      $image,
+      $this->handler,
+      $this->payload
+    ]);
   }
 }
