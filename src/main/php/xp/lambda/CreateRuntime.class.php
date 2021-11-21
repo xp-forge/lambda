@@ -28,7 +28,7 @@ class CreateRuntime {
     $code= "echo ' => PHP ', PHP_VERSION, ' & Zend ', zend_version(), ' @ ', php_uname(), PHP_EOL, ' => ', implode(' ', get_loaded_extensions()), PHP_EOL;";
     Console::writeLine();
     Console::writeLine("[+] Running {$runtime}\e[34m");
-    $this->passthru(['run', '--rm', $runtime, '/opt/php/bin/php', '-r', $code]);
+    $this->passthru(['run', '--rm', '--entrypoint=/opt/php/bin/php', $runtime, '-r', $code]);
     Console::writeLine("\e[0m");
 
     // Extract runtime

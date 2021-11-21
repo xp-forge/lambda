@@ -45,11 +45,10 @@ $ xp lambda test Greet '{"name":"Timm"}'
 START RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24 Version: $LATEST
 END RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24
 REPORT RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24  Init Duration: 922.19 ms...
-
 "Hello Timm from PHP 8.0.10 via test @ us-east-1"
 ```
 
-*This functionality is provided by the great [LambCI Docker image](https://github.com/lambci/docker-lambda)!*
+*This functionality is provided by the [AWS Lambda base images for custom runtimes](https://gallery.ecr.aws/lambda/provided)*
 
 Setup
 -----
