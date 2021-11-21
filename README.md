@@ -141,6 +141,37 @@ $ aws lambda update-function-configuration \
   --layers "arn:aws:lambda:us-east-1:XXXXXXXXXXXX:layer:lambda-xp-runtime:2"
 ```
 
+Using other AWS services
+------------------------
+In order to programmatically use other AWS services such as SQS with the [AWS SDK for PHP](https://docs.aws.amazon.com/sdk-for-php/index.html), pass the credentials via environment:
+
+```php
+use Aws\Sqs\SqsClient;
+use Aws\Credentials\CredentialProvider;
+use com\amazon\aws\lambda\Handler;
+
+class Trigger extends Handler {
+
+  /** @return com.amazon.aws.lambda.Lambda|callable */
+  public function target() {
+    $queue= new SqsClient([
+      'version'     => '2012-11-05',
+      'region'      => $this->environment->variable('AWS_REGION'),
+      'credentials' => CredentialProvider::env(),
+    ]);
+
+    // ...omitted for brevity...
+  }
+}
+```
+
+To test this locally, pass the necessary environment variables via *-e* on the command line:
+
+```bash
+$ xp lambda test -e AWS_ACCESS_KEY_ID=... -e AWS_SECRET_ACCESS_KEY=... Trigger
+# ...
+```
+
 Context
 -------
 The context object passed to the target lambda is defined as follows:
