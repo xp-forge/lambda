@@ -12,7 +12,7 @@ COPY --from=build /opt/php/bootstrap /var/runtime/bootstrap
 # Overwrite AWS lambda entrypoint
 RUN echo $'#!/bin/sh\n\n\
 export _HANDLER="$1"\n\
-/usr/local/bin/aws-lambda-rie /var/runtime/bootstrap 2>/dev/null &\n\
+/usr/local/bin/aws-lambda-rie /var/runtime/bootstrap --log-level error &\n\
 pid=$!\n\
 curl -s "http://localhost:8080/2015-03-31/functions/function/invocations" -d "$2"\n\
 kill -2 $pid\n\
