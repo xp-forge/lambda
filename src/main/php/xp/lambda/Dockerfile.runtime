@@ -26,7 +26,6 @@ RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
   --without-sqlite3 \
   --with-openssl \
   --enable-bcmath \
-  --disable-simplexml \
   --disable-pdo && \
   make -j $(nproc) all install
 
