@@ -88,7 +88,7 @@ $ aws lambda create-function \
   --function-name greet \
   --handler Greet \
   --zip-file fileb://./function.zip \
-  --runtime provided \
+  --runtime provided.al2 \
   --role "arn:aws:iam::XXXXXXXXXXXX:role/service-role/InvokeLambda" \
   --region us-east-1 \
   --layers "arn:aws:lambda:us-east-1:XXXXXXXXXXXX:layer:lambda-xp-runtime:1"
