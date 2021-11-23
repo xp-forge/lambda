@@ -45,11 +45,10 @@ $ xp lambda test Greet '{"name":"Timm"}'
 START RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24 Version: $LATEST
 END RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24
 REPORT RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24  Init Duration: 922.19 ms...
-
 "Hello Timm from PHP 8.0.10 via test @ us-east-1"
 ```
 
-*This functionality is provided by the great [LambCI Docker image](https://github.com/lambci/docker-lambda)!*
+*This functionality is provided by the [AWS Lambda base images for custom runtimes](https://gallery.ecr.aws/lambda/provided)*
 
 Setup
 -----
@@ -89,7 +88,7 @@ $ aws lambda create-function \
   --function-name greet \
   --handler Greet \
   --zip-file fileb://./function.zip \
-  --runtime provided \
+  --runtime provided.al2 \
   --role "arn:aws:iam::XXXXXXXXXXXX:role/service-role/InvokeLambda" \
   --region us-east-1 \
   --layers "arn:aws:lambda:us-east-1:XXXXXXXXXXXX:layer:lambda-xp-runtime:1"

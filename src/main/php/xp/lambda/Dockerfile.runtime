@@ -1,10 +1,7 @@
-FROM amazonlinux:2018.03.0.20210721.0 as builder
+FROM public.ecr.aws/lambda/provided:al2 as builder
 
 ARG php_version="?.?.?"
 ARG xp_version="?.?.?"
-
-# Install PHP build dependencies
-RUN curl -O http://mirror.centos.org/centos/7/os/x86_64/Packages/bison-3.0.4-2.el7.x86_64.rpm
 
 RUN yum clean all && yum install -y \
   autoconf \
@@ -15,8 +12,9 @@ RUN yum clean all && yum install -y \
   openssl-devel \
   libxml2-devel \
   tar \
+  gzip \
   zip \
-  bison-3.0.4-2.el7.x86_64.rpm
+  bison
 
 # Build PHP
 RUN curl -L https://github.com/php/php-src/archive/php-${php_version}.tar.gz | tar -xvz

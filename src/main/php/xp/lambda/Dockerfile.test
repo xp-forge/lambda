@@ -1,12 +1,21 @@
 ARG php_version="?.?.?"
 ARG xp_version="?.?.?"
 
-FROM lambda-xp-runtime:${php_version} as runtime
+FROM lambda-xp-runtime:${php_version} as build
 
-FROM lambci/lambda:provided
+FROM public.ecr.aws/lambda/provided:al2
 
-COPY --from=runtime /opt/php/bin/ /opt/bin/
+COPY --from=build /opt/php/bin/ /opt/bin/
 
-COPY --from=runtime /opt/php/bootstrap /opt/bootstrap
+COPY --from=build /opt/php/bootstrap /var/runtime/bootstrap
+
+# Overwrite AWS lambda entrypoint
+RUN echo $'#!/bin/sh\n\n\
+export _HANDLER="$1"\n\
+/usr/local/bin/aws-lambda-rie /var/runtime/bootstrap --log-level error &\n\
+pid=$!\n\
+curl -s "http://localhost:8080/2015-03-31/functions/function/invocations" -d "$2"\n\
+kill -2 $pid\n\
+echo' > /lambda-entrypoint.sh
 
 ENV TZ UTC
