@@ -34,6 +34,9 @@ image to use the image https://gallery.ecr.aws/lambda/provided
 
 ## 3.0.0 / 2021-09-26
 
+This major release drops backwards compatibility with older XP Framework
+releases. XP 10 was released roughly two years ago at the time of writing.
+
 * Merged PR #13: Refactor container execution to Process API provided by
   XP 10.14. Drops BC with XP 9 and lower, see xp-framework/rfc#341.
   (@thekid)
@@ -61,6 +64,9 @@ image to use the image https://gallery.ecr.aws/lambda/provided
 
 ## 2.0.0 / 2021-08-29
 
+This major release changes the packaging defaults. This way, files to be
+incuded can be specified more flexibly via command line arguments.
+
 * Increased code coverage for classes in public API to 100%, see issue #6
   (@thekid)
 * Fixed `Context::remainingTime()`'s return type, which can include NULL.
@@ -80,6 +86,8 @@ image to use the image https://gallery.ecr.aws/lambda/provided
   (@thekid)
 
 ## 1.0.0 / 2021-08-28
+
+The first major release includes final touches to the packaged ZIP file.
 
 * Merged PR #5: Unique given sources, preventing them being added to the
   ZIP file twice
