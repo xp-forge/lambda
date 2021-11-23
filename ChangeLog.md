@@ -3,6 +3,14 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 4.0.0 / 2021-11-23
+
+This major release upgrades the base image used to compile the runtime
+from from Amazon Linux 1 to Amazon Linux 2. It also changes the `test`
+image to use the image https://gallery.ecr.aws/lambda/provided
+
+* Merged PR #15: Upgrade to Amazon Linux 2 - @thekid
+
 ## 3.2.0 / 2021-11-15
 
 * Merged PR #14: Add ability to pass environment variables to tested lambda
