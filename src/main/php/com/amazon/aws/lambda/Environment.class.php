@@ -12,7 +12,7 @@ use util\{FilesystemPropertySource, PropertyAccess};
  * @test  com.amazon.aws.lambda.unittest.EnvironmentTest
  */
 class Environment {
-  public $root, $writer, $properties;
+  public $root, $variables, $writer, $properties;
 
   /** Creates a new environment */
   public function __construct(string $root, StringWriter $writer= null, array $variables= null) {

@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 4.0.1 / 2022-02-26
+
+* Fixed "Creation of dynamic property" warnings in PHP 8.2 - @thekid
+
 ## 4.0.0 / 2021-11-23
 
 This major release upgrades the base image used to compile the runtime
