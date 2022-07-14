@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 4.1.0 / 2022-07-14
+
+* Added [zlib extension](https://www.php.net/zlib), see #8 - @thekid
+
 ## 4.0.1 / 2022-02-26
 
 * Fixed "Creation of dynamic property" warnings in PHP 8.2 - @thekid
