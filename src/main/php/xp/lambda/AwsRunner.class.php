@@ -67,7 +67,7 @@ class AwsRunner {
           strtr($e->class, '\\', '.') ?: '<main>',
           $e->method,
           $e->line,
-          basename($e->file),
+          $e->file ? basename($e->file) : '',
           $e->message ? ' - '.$e->message : ''
         );
       }
