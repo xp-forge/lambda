@@ -50,49 +50,30 @@ class AwsRunner {
   }
 
   /**
-   * Reads a value from the given input stream
-   *
-   * @param  io.streams.InputStream
-   * @return var
-   */
-  private static function read($in) {
-    return Json::read(new StreamInput($in));
-  }
-
-  /**
-   * Marshals a value 
-   *
-   * @param  var $value
-   * @return string
-   */
-  private static function value($value) {
-    return Json::of($value);
-  }
-
-  /**
    * Marshals an error according to the AWS specification.
    *
    * @param  Throwable $e
-   * @return string
+   * @return [:var]
    */
-  private static function error($e) {
+  public static function error($e) {
     $error= ['errorMessage' => $e->getMessage(), 'errorType' => nameof($e), 'stackTrace' => []];
 
     $t= XPException::wrap($e);
     do {
+      $error['stackTrace'][]= $t->compoundMessage();
       foreach ($t->getStackTrace() as $e) {
         $error['stackTrace'][]= sprintf(
           '%s::%s(...) (line %d of %s)%s',
           strtr($e->class, '\\', '.') ?: '<main>',
           $e->method,
           $e->line,
-          basename($e->file),
+          $e->file ? basename($e->file) : '',
           $e->message ? ' - '.$e->message : ''
         );
       }
     } while ($t= $t->getCause());
 
-    return Json::of($error);
+    return $error;
   }
 
   /**
@@ -109,7 +90,7 @@ class AwsRunner {
       $lambda= self::handler($environment, Console::$out)->lambda();
     } catch (Throwable $t) {
       self::endpoint($environment, 'init/error')->post(
-        new RequestData(self::error($t)),
+        new RequestData(Json::of(self::error($t))),
         ['Content-Type' => 'application/json']
       );
       return 1;
@@ -126,17 +107,16 @@ class AwsRunner {
 
       $context= new Context($r->headers(), $environment);
       try {
-        $event= 0 === $context->payloadLength ? null : self::read($r->in());
-
+        $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
         $type= 'response';
-        $response= self::value($lambda($event, $context));
+        $response= $lambda($event, $context);
       } catch (Throwable $t) {
         $type= 'error';
         $response= self::error($t);
       }
 
       self::endpoint($environment, "invocation/{$context->awsRequestId}/{$type}")->post(
-        new RequestData($response),
+        new RequestData(Json::of($response)),
         ['Content-Type' => 'application/json']
       );
     } while (true);
