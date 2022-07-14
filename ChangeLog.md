@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 4.2.0 / 2022-07-14
+
+* Merged PR #16: Include exception cause in error output - @thekid
+
 ## 4.1.0 / 2022-07-14
 
 * Added [zlib extension](https://www.php.net/zlib), see #8 - @thekid
