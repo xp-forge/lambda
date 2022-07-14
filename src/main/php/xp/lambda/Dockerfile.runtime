@@ -22,6 +22,7 @@ RUN curl -L https://github.com/php/php-src/archive/php-${php_version}.tar.gz | t
 RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
   --prefix=/opt/php/ \
   --without-sqlite3 \
+  --with-zlib \
   --with-openssl \
   --enable-bcmath \
   --disable-pdo && \
