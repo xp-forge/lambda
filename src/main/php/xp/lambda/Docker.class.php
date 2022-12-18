@@ -1,7 +1,7 @@
 <?php namespace xp\lambda;
 
 use io\Path;
-use lang\{CommandLine, Process};
+use lang\{CommandLine, Process, IllegalStateException};
 
 trait Docker {
   private $command= null;
