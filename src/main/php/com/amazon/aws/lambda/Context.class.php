@@ -65,7 +65,7 @@ class Context implements Value {
       "  [logStreamName     ] %s\n".
       "  [region            ] %s\n".
       "  [clientContext     ] %s\n".
-      "  [identity          ] %s\n".
+      "  [cognitoIdentity   ] %s\n".
       "}\n",
       nameof($this),
       $this->awsRequestId,
@@ -80,7 +80,7 @@ class Context implements Value {
       $this->logStreamName ?? '(null)',
       $this->region,
       $this->clientContext ?? '(null)',
-      $this->identity ?? '(null)'
+      $this->cognitoIdentity ?? '(null)'
     );
   }
 
