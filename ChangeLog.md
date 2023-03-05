@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #17: Migrate to new testing library - @thekid
+
 ## 4.2.0 / 2022-07-14
 
 * Merged PR #16: Include exception cause in error output - @thekid
