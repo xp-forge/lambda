@@ -1,8 +1,8 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use io\{Folder, File, Path};
+use io\{File, Folder, Path};
 use lang\Environment;
-use unittest\{Assert, After, Test, Values};
+use test\{After, Assert, Test, Values};
 use xp\lambda\Sources;
 
 class SourcesTest {

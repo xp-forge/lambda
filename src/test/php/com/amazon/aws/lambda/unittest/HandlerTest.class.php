@@ -1,8 +1,8 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\{Handler, Environment, Lambda, Context};
+use com\amazon\aws\lambda\{Context, Environment, Handler, Lambda};
 use lang\IllegalArgumentException;
-use unittest\{Assert, Expect, Test};
+use test\{Assert, Expect, Test};
 
 class HandlerTest {
   private $headers= [
