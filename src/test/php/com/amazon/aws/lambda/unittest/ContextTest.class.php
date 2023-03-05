@@ -1,7 +1,7 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
 use com\amazon\aws\lambda\Context;
-use unittest\{Assert, Test, Values};
+use test\{Assert, Test, Values};
 
 class ContextTest {
   private $headers= [
@@ -40,7 +40,7 @@ class ContextTest {
     yield ['AWS_REGION', 'region'];
   }
 
-  #[Test, Values('headers')]
+  #[Test, Values(from: 'headers')]
   public function headers_mapped_to_fields($header, $field) {
     Assert::equals(
       $this->headers[$header][0] ?? null,
@@ -48,7 +48,7 @@ class ContextTest {
     );
   }
 
-  #[Test, Values('environment')]
+  #[Test, Values(from: 'environment')]
   public function environment_mapped_to_fields($variable, $field) {
     Assert::equals(
       $this->environment[$variable] ?? null,

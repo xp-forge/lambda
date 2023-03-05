@@ -1,11 +1,11 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
 use com\amazon\aws\lambda\Environment;
-use io\streams\{StringWriter, MemoryOutputStream};
-use io\{Path, File, Files};
+use io\streams\{MemoryOutputStream, StringWriter};
+use io\{File, Files, Path};
 use lang\ElementNotFoundException;
 use lang\Environment as System;
-use unittest\{Assert, Test};
+use test\{Assert, Expect, Test};
 use util\Properties;
 
 class EnvironmentTest {
@@ -72,7 +72,7 @@ class EnvironmentTest {
     }
   }
 
-  #[Test, Expect(class: ElementNotFoundException::class, withMessage: '/Cannot find properties "test"/')]
+  #[Test, Expect(class: ElementNotFoundException::class, message: '/Cannot find properties "test"/')]
   public function non_existant_properties() {
     (new Environment('.'))->properties('test');
   }

@@ -1,7 +1,7 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
 use lang\{IllegalArgumentException, IllegalStateException};
-use unittest\{Assert, Test};
+use test\{Assert, Test};
 use xp\lambda\AwsRunner;
 
 class ExceptionTest {
