@@ -1,6 +1,6 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\Environment;
+use com\amazon\aws\lambda\{Environment, Credentials};
 use io\streams\{MemoryOutputStream, StringWriter};
 use io\{File, Files, Path};
 use lang\ElementNotFoundException;
@@ -43,6 +43,33 @@ class EnvironmentTest {
   #[Test]
   public function non_existant_variable() {
     Assert::null((new Environment('.', null, []))->variable('TEST'));
+  }
+
+  #[Test]
+  public function credentials() {
+    $env= [
+      'AWS_ACCESS_KEY_ID'     => 'KEY',
+      'AWS_SECRET_ACCESS_KEY' => 'SECRET',
+    ];
+
+    Assert::equals(
+      new Credentials('KEY', 'SECRET'),
+      (new Environment('.', null, $env))->credentials()
+    );
+  }
+
+  #[Test]
+  public function credentials_with_session() {
+    $env= [
+      'AWS_ACCESS_KEY_ID'     => 'KEY',
+      'AWS_SECRET_ACCESS_KEY' => 'SECRET',
+      'AWS_SESSION_TOKEN'     => 'SESSION',
+    ];
+
+    Assert::equals(
+      new Credentials('KEY', 'SECRET', 'SESSION'),
+      (new Environment('.', null, $env))->credentials()
+    );
   }
 
   #[Test]
