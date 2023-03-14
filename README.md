@@ -216,6 +216,7 @@ public class com.amazon.aws.lambda.Environment {
   public function path(string $path): io.Path
   public function tempDir(): io.Path
   public function variable(string $name): ?string
+  public function credentials(): com.amazon.aws.lambda.Credentials
   public function trace(var... $args): void
   public function properties(string $name): util.PropertyAccess
 }

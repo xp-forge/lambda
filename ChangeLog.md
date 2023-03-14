@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #18: Make credentials accessible via `credentials()` in
+  `Environment` (instead of having to use *AWS_ACCESS_KEY_ID/...*
+  environment variables).
+  (@thekid)
 * Merged PR #17: Migrate to new testing library - @thekid
 
 ## 4.2.0 / 2022-07-14
