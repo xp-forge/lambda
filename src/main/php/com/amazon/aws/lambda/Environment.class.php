@@ -56,7 +56,7 @@ class Environment {
     return new Credentials(
       $this->variables['AWS_ACCESS_KEY_ID'],
       $this->variables['AWS_SECRET_ACCESS_KEY'],
-      $this->variables['AWS_SESSION_TOKEN'] ?? null,
+      $this->variables['AWS_SESSION_TOKEN'] ?? null
     );
   }
 
