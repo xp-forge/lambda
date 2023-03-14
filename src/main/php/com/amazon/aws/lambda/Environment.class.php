@@ -10,6 +10,7 @@ use util\{FilesystemPropertySource, PropertyAccess};
  * Runtime environment of a lambda
  *
  * @test  com.amazon.aws.lambda.unittest.EnvironmentTest
+ * @see   https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html
  */
 class Environment {
   public $root, $variables, $writer, $properties;
@@ -44,6 +45,19 @@ class Environment {
    */
   public function variable($name) {
     return $this->variables[$name] ?? null;
+  }
+
+  /**
+   * Returns credentials from this environment
+   *
+   * @return com.amazon.aws.lambda.Credentials
+   */
+  public function credentials() {
+    return new Credentials(
+      $this->variables['AWS_ACCESS_KEY_ID'],
+      $this->variables['AWS_SECRET_ACCESS_KEY'],
+      $this->variables['AWS_SESSION_TOKEN'] ?? null
+    );
   }
 
   /**
