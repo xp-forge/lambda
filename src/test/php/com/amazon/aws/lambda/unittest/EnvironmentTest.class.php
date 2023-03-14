@@ -1,6 +1,7 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\{Environment, Credentials};
+use com\amazon\aws\Credentials;
+use com\amazon\aws\lambda\Environment;
 use io\streams\{MemoryOutputStream, StringWriter};
 use io\{File, Files, Path};
 use lang\ElementNotFoundException;
