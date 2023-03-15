@@ -142,24 +142,27 @@ $ aws lambda update-function-configuration \
 
 Using other AWS services
 ------------------------
-In order to programmatically use other AWS services such as SQS with the [AWS SDK for PHP](https://docs.aws.amazon.com/sdk-for-php/index.html), pass the credentials via environment:
+In order to programmatically use other AWS services use the *ServiceEndpoint* class:
 
 ```php
-use Aws\Sqs\SqsClient;
-use Aws\Credentials\CredentialProvider;
+use com\amazon\aws\{Credentials, ServiceEndpoint};
 use com\amazon\aws\lambda\Handler;
 
-class Trigger extends Handler {
+class Streaming extends Handler {
 
   /** @return com.amazon.aws.lambda.Lambda|callable */
   public function target() {
-    $queue= new SqsClient([
-      'version'     => '2012-11-05',
-      'region'      => $this->environment->variable('AWS_REGION'),
-      'credentials' => CredentialProvider::env(),
-    ]);
+    return function($event, $context) {
 
-    // ...omitted for brevity...
+      // Send message to WebSocket connection
+      (new ServiceEndpoint('execute-api', $this->environment->credentials()))
+        ->in($context->region)
+        ->using($event['requestContext']['apiId'])
+        ->resource('/{stage}/@connections/{connectionId}', $event['requestContext'])
+        ->transmit(['message' => 'Reply'])
+      ;
+      return ['statusCode' => 200];
+    };
   }
 }
 ```
@@ -167,7 +170,7 @@ class Trigger extends Handler {
 To test this locally, pass the necessary environment variables via *-e* on the command line:
 
 ```bash
-$ xp lambda test -e AWS_ACCESS_KEY_ID=... -e AWS_SECRET_ACCESS_KEY=... Trigger
+$ xp lambda test -e AWS_ACCESS_KEY_ID=... -e AWS_SECRET_ACCESS_KEY=... Streaming '{"requestContext":...}'
 # ...
 ```
 
@@ -216,7 +219,7 @@ public class com.amazon.aws.lambda.Environment {
   public function path(string $path): io.Path
   public function tempDir(): io.Path
   public function variable(string $name): ?string
-  public function credentials(): com.amazon.aws.lambda.Credentials
+  public function credentials(): com.amazon.aws.Credentials
   public function trace(var... $args): void
   public function properties(string $name): util.PropertyAccess
 }

@@ -1,5 +1,6 @@
 <?php namespace com\amazon\aws\lambda;
 
+use com\amazon\aws\Credentials;
 use io\Path;
 use io\streams\StringWriter;
 use lang\{ElementNotFoundException, Environment as System};
@@ -50,7 +51,7 @@ class Environment {
   /**
    * Returns credentials from this environment
    *
-   * @return com.amazon.aws.lambda.Credentials
+   * @return com.amazon.aws.Credentials
    */
   public function credentials() {
     return new Credentials(
