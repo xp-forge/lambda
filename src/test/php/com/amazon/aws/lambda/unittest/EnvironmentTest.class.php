@@ -1,7 +1,7 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\Credentials;
 use com\amazon\aws\lambda\Environment;
+use com\amazon\aws\{Credentials, ServiceEndpoint};
 use io\streams\{MemoryOutputStream, StringWriter};
 use io\{File, Files, Path};
 use lang\ElementNotFoundException;
@@ -70,6 +70,18 @@ class EnvironmentTest {
     Assert::equals(
       new Credentials('KEY', 'SECRET', 'SESSION'),
       (new Environment('.', null, $env))->credentials()
+    );
+  }
+
+  #[Test]
+  public function endpoint() {
+    Assert::equals(
+      'id.execute-api.us-east-1.amazonaws.com',
+      (new Environment('.', null, ['AWS_ACCESS_KEY_ID' => '*', 'AWS_SECRET_ACCESS_KEY' => '*']))
+        ->endpoint('execute-api')
+        ->in('us-east-1')
+        ->using('id')
+        ->domain()
     );
   }
 
