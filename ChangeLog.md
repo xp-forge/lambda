@@ -3,6 +3,13 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 4.3.0 / 2023-03-15
+
+* Merged PR #20: Add `Environment::endpoint()` to return AWS service
+  endpoints
+  (@thekid)
+* Merged PR #19: Extract AWS core library - containing credentials
+  and AWS service endpoints, see https://github.com/xp-forge/aws
 * Merged PR #18: Make credentials accessible via `credentials()` in
   `Environment` (instead of having to use *AWS_ACCESS_KEY_ID/...*
   environment variables).
