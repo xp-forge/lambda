@@ -155,7 +155,7 @@ class Streaming extends Handler {
     return function($event, $context) {
 
       // Send message to WebSocket connection
-      (new ServiceEndpoint('execute-api', $this->environment->credentials()))
+      $this->environment->endpoint('execute-api')
         ->in($context->region)
         ->using($event['requestContext']['apiId'])
         ->resource('/{stage}/@connections/{connectionId}', $event['requestContext'])

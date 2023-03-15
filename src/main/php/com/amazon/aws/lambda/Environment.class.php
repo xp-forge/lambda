@@ -1,6 +1,6 @@
 <?php namespace com\amazon\aws\lambda;
 
-use com\amazon\aws\Credentials;
+use com\amazon\aws\{Credentials, ServiceEndpoint};
 use io\Path;
 use io\streams\StringWriter;
 use lang\{ElementNotFoundException, Environment as System};
@@ -59,6 +59,16 @@ class Environment {
       $this->variables['AWS_SECRET_ACCESS_KEY'],
       $this->variables['AWS_SESSION_TOKEN'] ?? null
     );
+  }
+
+  /**
+   * Returns an endpoint for a given service
+   *
+   * @param  string $service
+   * @return com.amazon.aws.ServiceEndpoint
+   */
+  public function endpoint($service) {
+    return new ServiceEndpoint($service, $this->credentials());
   }
 
   /**
