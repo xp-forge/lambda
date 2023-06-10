@@ -9,7 +9,7 @@ use util\cmd\Console;
  * Run lambdas locally
  *
  * @see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html
- * @see https://docs.aws.amazon.com/de_de/lambda/latest/dg/runtimes-api.html
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html
  */
 class RunLambda {
   const TRACE= 'Root=1-5bef4de7-ad49b0e87f6ef6c87fc2e700;Parent=9a9197af755a6419;Sampled=1';
