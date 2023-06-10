@@ -58,6 +58,28 @@ class Greet extends Handler {
 }
 ```
 
+### Logging
+
+To write output to the lambda's log stream, use *trace()*:
+
+```php
+use com\amazon\aws\lambda\Handler;
+
+class Greet extends Handler {
+
+  /** @return com.amazon.aws.lambda.Lambda|callable */
+  public function target() {
+    return function($event, $context) {
+      $this->environment->trace('Invoked with ', $event);
+
+      return sprintf(/* Shortened for brevity */);
+    };
+  }
+}
+```
+
+Any non-string arguments passed will be converted to string using `util.Objects::stringOf()`.
+
 The lambda's environment accessible via *$this->environment* is an Environment instance, see [below](https://github.com/xp-forge/lambda#environment).
 
 Development
