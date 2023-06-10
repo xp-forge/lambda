@@ -34,7 +34,9 @@ class Greet extends Handler {
 
 The two parameters passed are *$event* (a value [depending on where the lambda was invoked from](https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html)) and *$context* (a Context instance, see [below](https://github.com/xp-forge/lambda#context)).
 
-If you need to run any initialization code, you can do before returning the lambda from *target()*. This code is only run once during the initialization phase. It has access to the lambda's environment via *$this->environment* (an Environment instance, see [below](https://github.com/xp-forge/lambda#environment)):
+### Initialization
+
+If you need to run any initialization code, you can do so before returning the lambda from *target()*. This code is only run once during the [init phase](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html#runtimes-lifecycle):
 
 ```php
 use com\amazon\aws\lambda\Handler;
@@ -55,6 +57,8 @@ class Greet extends Handler {
   }
 }
 ```
+
+The lambda's environment accessible via *$this->environment* is an Environment instance, see [below](https://github.com/xp-forge/lambda#environment).
 
 Development
 -----------
