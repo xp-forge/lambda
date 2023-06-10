@@ -221,6 +221,7 @@ The runtime environment is defined as follows:
 ```php
 public class com.amazon.aws.lambda.Environment {
   public string $root
+  public [:string] $variables
   public io.streams.StringWriter $writer
   public util.PropertySource $properties
 
@@ -229,6 +230,7 @@ public class com.amazon.aws.lambda.Environment {
   public function taskroot(): io.Path
   public function path(string $path): io.Path
   public function tempDir(): io.Path
+  public function local(): bool
   public function variable(string $name): ?string
   public function credentials(): com.amazon.aws.Credentials
   public function trace(var... $args): void
