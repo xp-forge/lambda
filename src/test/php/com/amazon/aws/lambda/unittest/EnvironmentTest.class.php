@@ -47,6 +47,16 @@ class EnvironmentTest {
   }
 
   #[Test]
+  public function not_local_by_default() {
+    Assert::false((new Environment('.', null, []))->local());
+  }
+
+  #[Test]
+  public function local() {
+    Assert::true((new Environment('.', null, ['AWS_LOCAL' => true]))->local());
+  }
+
+  #[Test]
   public function credentials() {
     $env= [
       'AWS_ACCESS_KEY_ID'     => 'KEY',

@@ -38,6 +38,11 @@ class Environment {
     return new Path(sys_get_temp_dir());
   }
 
+  /** Returns whether this is a local invocation */
+  public function local(): bool {
+    return isset($this->variables['AWS_LOCAL']);
+  }
+
   /**
    * Returns a given environment variable
    *
