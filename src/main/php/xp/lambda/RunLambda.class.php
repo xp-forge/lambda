@@ -43,8 +43,7 @@ class RunLambda {
     $environment= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region, 'AWS_LOCAL' => true];
 
     try {
-      $target= $this->impl->newInstance(new Environment(getcwd(), Console::$out, $environment))->target();
-      $lambda= $target instanceof Lambda ? [$target, 'process'] : $target;
+      $lambda= $this->impl->newInstance(new Environment(getcwd(), Console::$out, $environment))->lambda();
     } catch (Throwable $e) {
       Console::$err->writeLine($e);
       return 127;
