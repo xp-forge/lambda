@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 4.4.0 / 2023-06-10
+
+* Merged PR #21: Implement `xp lambda run ...` to run lambdas locally
+  (@thekid)
+
 ## 4.3.0 / 2023-03-15
 
 * Merged PR #20: Add `Environment::endpoint()` to return AWS service
