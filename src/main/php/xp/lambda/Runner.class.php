@@ -8,6 +8,26 @@ use text\json\{Json, StreamInput};
  * XP AWS Lambda
  * =============
  *
+ * - Run lambda locally:
+ *   ```sh
+ *   $ xp lambda run Greet '{"name":"Test"}'
+ *   ```
+ * - Package single file in `function.zip` file for deployment:
+ *   ```sh
+ *   $ xp lambda package Greet.class.php
+ *   ```
+ * - Package INI file and source directory in `function.zip`:
+ *   ```sh
+ *   $ xp lambda package task.ini src/main/php
+ *   ```
+ * - Test lambda inside a containerized AWS environment:
+ *   ```sh
+ *   $ xp lambda test Greet '{"name":"Test"}'
+ *   ```
+ * - Test lambda, pass environment variables:
+ *   ```sh
+ *   $ xp lambda test -e PROFILE=prod Audit
+ *   ```
  * - Store runtime layer as `runtime-X.X.X.zip`, building if necessary:
  *   ```sh
  *   $ xp lambda runtime
@@ -20,23 +40,7 @@ use text\json\{Json, StreamInput};
  *   ```sh
  *   $ xp lambda runtime:8.0
  *   ```
- * - Test lambda:
- *   ```sh
- *   $ xp lambda test Greet '{"name":"Test"}'
- *   ```
- * - Test lambda, pass environment variables:
- *   ```sh
- *   $ xp lambda test -e PROFILE=prod Audit
- *   ```
- * - Package single file in `function.zip` file for deployment:
- *   ```sh
- *   $ xp lambda package Greet.class.php
- *   ```
- * - Package INI file and source directory in `function.zip`:
- *   ```sh
- *   $ xp lambda package task.ini src/main/php
- *   ```
- * The `runtime` and `test` commands require Docker or Podman to be installed!
+ * The `test` and `runtime` commands require Docker or Podman to be installed!
  * Packaging will always include the `vendor` directory automatically.
  */
 class Runner {
@@ -66,6 +70,7 @@ class Runner {
     sscanf($name, "%[^:]:%[^\r]", $command, $version);
     switch ($command) {
       case 'package': return new PackageLambda(new Path('function.zip'), new Sources(new Path('.'), [...$args, 'vendor']));
+      case 'run': return new RunLambda(...$args);
       case 'runtime': return new CreateRuntime(self::resolve($version), new Path('runtime-%s.zip'), in_array('-b', $args));
       case 'test': return new TestLambda(self::resolve($version), new Path('.'), $args);
       default: return new DisplayError('Unknown command "'.$args[0].'"');
