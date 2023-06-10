@@ -1,9 +1,9 @@
 <?php namespace xp\lambda;
 
 use Throwable;
-use com\amazon\aws\lambda\{Context, Environment};
+use com\amazon\aws\lambda\{Context, Environment, Handler};
 use io\IOException;
-use lang\{XPClass, XPException, Environment as System};
+use lang\{XPClass, XPException, IllegalArgumentException, Environment as System};
 use peer\http\{HttpConnection, RequestData};
 use text\json\{Json, StreamInput};
 use util\cmd\Console;
@@ -12,6 +12,7 @@ use util\cmd\Console;
  * Custom AWS Lambda runtimes
  *
  * @see  https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html
+ * @test com.amazon.aws.lambda.unittest.AwsRunnerTest
  */
 class AwsRunner {
 
@@ -22,9 +23,16 @@ class AwsRunner {
    * @param  [:string] $environment
    * @param  io.streams.StringWriter $writer
    * @return com.amazon.aws.lambda.Handler
+   * @throws lang.ClassLoadingException
+   * @throws lang.IllegalArgumentException
    */
-  private static function handler($environment, $writer) {
-    return XPClass::forName($environment['_HANDLER'])->newInstance(new Environment(
+  public static function handler($environment, $writer) {
+    $impl= XPClass::forName($environment['_HANDLER'] ?? '');
+    if (!$impl->isSubclassOf(Handler::class)) {
+      throw new IllegalArgumentException('Class '.$impl->getName().' is not a lambda handler');
+    }
+
+    return $impl->newInstance(new Environment(
       $environment['LAMBDA_TASK_ROOT'] ?? '.',
       $writer,
       $environment
@@ -40,7 +48,7 @@ class AwsRunner {
    * @param  string $path
    * @return peer.http.HttpConnection
    */
-  private static function endpoint($environment, $path) {
+  public static function endpoint($environment, $path) {
     $c= new HttpConnection("http://{$environment['AWS_LAMBDA_RUNTIME_API']}/2018-06-01/runtime/{$path}");
 
     // Use a 15 minute timeout, this is the maximum lambda runtime, see
