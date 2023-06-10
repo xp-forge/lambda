@@ -11,7 +11,8 @@ use util\cmd\Console;
  * @see https://docs.aws.amazon.com/de_de/lambda/latest/dg/runtimes-api.html
  */
 class RunLambda {
-  const TRACE_ID= 'Root=1-5bef4de7-ad49b0e87f6ef6c87fc2e700;Parent=9a9197af755a6419;Sampled=1';
+  const TRACE= 'Root=1-5bef4de7-ad49b0e87f6ef6c87fc2e700;Parent=9a9197af755a6419;Sampled=1';
+  const REGION= 'test-local-1';
 
   private $impl, $events;
 
@@ -30,7 +31,7 @@ class RunLambda {
   /** Runs this command */
   public function run(): int {
     $name= $this->impl->getSimpleName();
-    $region= getenv('AWS_REGION') ?: 'test-local-1';
+    $region= getenv('AWS_REGION') ?: self::REGION;
     $functionArn= "arn:aws:lambda:{$region}:123456789012:function:{$name}";
     $deadlineMs= (time() + 900) * 1000;
     $environment= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region];
@@ -48,7 +49,7 @@ class RunLambda {
       $headers= [
         'Lambda-Runtime-Aws-Request-Id'       => [UUID::randomUUID()->hashCode()],
         'Lambda-Runtime-Invoked-Function-Arn' => [$functionArn],
-        'Lambda-Runtime-Trace-Id'             => [self::TRACE_ID],
+        'Lambda-Runtime-Trace-Id'             => [self::TRACE],
         'Lambda-Runtime-Deadline-Ms'          => [$deadlineMs],
         'Content-Length'                      => [strlen($event)],
       ];
