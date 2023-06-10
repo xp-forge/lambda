@@ -41,7 +41,7 @@ class RunLambda {
       $lambda= $target instanceof Lambda ? [$target, 'process'] : $target;
     } catch (Throwable $e) {
       Console::$err->writeLine($e);
-      return 1;
+      return 127;
     }
 
     $status= 0;
