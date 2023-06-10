@@ -13,49 +13,54 @@ use util\cmd\Console;
 class RunLambda {
   const TRACE_ID= 'Root=1-5bef4de7-ad49b0e87f6ef6c87fc2e700;Parent=9a9197af755a6419;Sampled=1';
 
-  private $impl, $length, $event;
+  private $impl, $events;
 
   /**
    * Creates a new `run` subcommand
    *
    * @param  string $handler
-   * @param  ?string $event
+   * @param  string... $events
    * @throws lang.ClassLoadingException
    */
-  public function __construct($handler, $event= null) {
+  public function __construct($handler= 'Handler', ... $events) {
     $this->impl= XPClass::forName($handler);
-    if (null === $event) {
-      $this->length= 0;
-      $this->event= null;
-    } else {
-      $this->length= strlen($event);
-      $this->event= json_decode($event, true);
-    }    
+    $this->events= $events ?: ['{}'];
   }
 
   /** Runs this command */
   public function run(): int {
     $name= $this->impl->getSimpleName();
     $region= getenv('AWS_REGION') ?: 'test-local-1';
-    $context= new Context(
-      [
-        'Lambda-Runtime-Aws-Request-Id'       => [UUID::randomUUID()->hashCode()],
-        'Lambda-Runtime-Invoked-Function-Arn' => ["arn:aws:lambda:{$region}:123456789012:function:{$name}"],
-        'Lambda-Runtime-Trace-Id'             => [self::TRACE_ID],
-        'Lambda-Runtime-Deadline-Ms'          => [(time() + 900) * 1000],
-        'Content-Length'                      => [$this->length],
-      ],
-      $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region]
-    );
-    
+    $functionArn= "arn:aws:lambda:{$region}:123456789012:function:{$name}";
+    $deadlineMs= (time() + 900) * 1000;
+    $environment= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region];
+
     try {
-      $lambda= $this->impl->newInstance(new Environment(getcwd(), Console::$out, []))->target();
-      $result= $lambda instanceof Lambda ? $lambda->process($this->event, $context) : $lambda($this->event, $context);
-      Console::$out->writeLine($result);
-      return 0;
+      $target= $this->impl->newInstance(new Environment(getcwd(), Console::$out, []))->target();
+      $lambda= $target instanceof Lambda ? [$target, 'process'] : $target;
     } catch (Throwable $e) {
       Console::$err->writeLine($e);
       return 1;
     }
+
+    $status= 0;
+    foreach ($this->events as $event) {
+      $headers= [
+        'Lambda-Runtime-Aws-Request-Id'       => [UUID::randomUUID()->hashCode()],
+        'Lambda-Runtime-Invoked-Function-Arn' => [$functionArn],
+        'Lambda-Runtime-Trace-Id'             => [self::TRACE_ID],
+        'Lambda-Runtime-Deadline-Ms'          => [$deadlineMs],
+        'Content-Length'                      => [strlen($event)],
+      ];
+
+      try {
+        $result= $lambda(json_decode($event, true), new Context($headers, $environment));
+        Console::$out->writeLine($result);
+      } catch (Throwable $e) {
+        Console::$err->writeLine($e);
+        $status= 1;
+      }
+    }
+    return $status;
   }
 }

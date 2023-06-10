@@ -70,7 +70,7 @@ class Runner {
     sscanf($name, "%[^:]:%[^\r]", $command, $version);
     switch ($command) {
       case 'package': return new PackageLambda(new Path('function.zip'), new Sources(new Path('.'), [...$args, 'vendor']));
-      case 'run': return new RunLambda($args[0], $args[1] ?? null);
+      case 'run': return new RunLambda(...$args);
       case 'runtime': return new CreateRuntime(self::resolve($version), new Path('runtime-%s.zip'), in_array('-b', $args));
       case 'test': return new TestLambda(self::resolve($version), new Path('.'), $args);
       default: return new DisplayError('Unknown command "'.$args[0].'"');
