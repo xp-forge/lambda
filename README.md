@@ -58,6 +58,9 @@ class Greet extends Handler {
 }
 ```
 
+The lambda's environment accessible via *$this->environment* is an Environment instance, see [below](https://github.com/xp-forge/lambda#environment).
+
+
 ### Logging
 
 To write output to the lambda's log stream, use *trace()*:
@@ -78,9 +81,7 @@ class Greet extends Handler {
 }
 ```
 
-Any non-string arguments passed will be converted to string using `util.Objects::stringOf()`.
-
-The lambda's environment accessible via *$this->environment* is an Environment instance, see [below](https://github.com/xp-forge/lambda#environment).
+Any non-string arguments passed will be converted to string using `util.Objects::stringOf()`. To integrate with [XP logging](https://github.com/xp-framework/logging), pass the environment's writer to the console appender, e.g. by using `$cat= Logging::all()->toConsole($this->environment->writer)`.
 
 Development
 -----------
