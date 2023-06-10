@@ -35,7 +35,7 @@ class RunLambda {
     $region= getenv('AWS_REGION') ?: self::REGION;
     $functionArn= "arn:aws:lambda:{$region}:123456789012:function:{$name}";
     $deadlineMs= (time() + 900) * 1000;
-    $environment= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region];
+    $environment= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region, 'AWS_LOCAL' => true];
 
     try {
       $target= $this->impl->newInstance(new Environment(getcwd(), Console::$out, $environment))->target();
