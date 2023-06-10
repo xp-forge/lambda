@@ -8,6 +8,7 @@ use util\cmd\Console;
 /**
  * Run lambdas locally
  *
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html
  * @see https://docs.aws.amazon.com/de_de/lambda/latest/dg/runtimes-api.html
  */
 class RunLambda {
