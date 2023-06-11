@@ -3,6 +3,12 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 4.5.0 / 2023-06-11
+
+* Check whether configured / passed handler extends the `Handler` base
+  class and fail with a dedicated error message otherwise
+  (@thekid)
+
 ## 4.4.0 / 2023-06-10
 
 * Merged PR #21: Implement `xp lambda run ...` to run lambdas locally
