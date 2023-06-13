@@ -1,6 +1,6 @@
 <?php namespace xp\lambda;
 
-use Throwable;
+use Throwable, ReflectionFunction;
 use com\amazon\aws\lambda\{Context, Environment, Handler};
 use io\IOException;
 use lang\{XPClass, XPException, IllegalArgumentException, Environment as System};
@@ -97,6 +97,7 @@ class AwsRunner {
     // Initialization
     try {
       $lambda= self::handler($environment, Console::$out)->lambda();
+      $stream= (new ReflectionFunction($lambda))->getNumberOfParameters() >= 3;
     } catch (Throwable $t) {
       self::endpoint($environment, 'init/error')->post(
         new RequestData(Json::of(self::error($t))),
@@ -109,25 +110,41 @@ class AwsRunner {
     do {
       try {
         $r= self::endpoint($environment, 'invocation/next')->get();
+        $context= new Context($r->headers(), $environment);
+        $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
       } catch (IOException $e) {
         Console::$err->writeLine($e);
         break;
-      }
-
-      $context= new Context($r->headers(), $environment);
-      try {
-        $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
-        $type= 'response';
-        $response= $lambda($event, $context);
       } catch (Throwable $t) {
-        $type= 'error';
-        $response= self::error($t);
+        self::endpoint($environment, "invocation/{$context->awsRequestId}/error")->post(
+          new RequestData(Json::of(self::error($t))),
+          ['Content-Type' => 'application/json']
+        );
+        continue;
       }
 
-      self::endpoint($environment, "invocation/{$context->awsRequestId}/{$type}")->post(
-        new RequestData(Json::of($response)),
-        ['Content-Type' => 'application/json']
-      );
+      if ($stream) {
+        $streaming= new Streaming(self::endpoint($environment, "invocation/{$context->awsRequestId}/response"));
+        try {
+          $streaming->invoke($lambda, $event, $context);
+        } catch (Throwable $t) {
+          Console::$err->writeLine($e);
+          break;
+        }
+      } else {
+        try {
+          $type= 'response';
+          $response= $lambda($event, $context);
+        } catch (Throwable $t) {
+          $type= 'error';
+          $response= self::error($t);
+        }
+
+        self::endpoint($environment, "invocation/{$context->awsRequestId}/{$type}")->post(
+          new RequestData(Json::of($response)),
+          ['Content-Type' => 'application/json']
+        );
+      }
     } while (true);
 
     return 0;
