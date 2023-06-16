@@ -1,7 +1,7 @@
 <?php namespace xp\lambda;
 
 use Throwable, ReflectionFunction;
-use com\amazon\aws\lambda\{Context, Environment, Handler};
+use com\amazon\aws\lambda\{Context, Environment, Handler, Streaming};
 use io\IOException;
 use lang\{XPClass, XPException, IllegalArgumentException, Environment as System};
 use peer\http\{HttpConnection, RequestData};
