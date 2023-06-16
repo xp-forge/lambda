@@ -85,20 +85,13 @@ class AwsRunner {
         $r= self::endpoint($environment, 'invocation/next')->get();
         $context= new Context($r->headers(), $environment);
         $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
-      } catch (IOException $e) {
-        Console::$err->writeLine($e);
-        break;
-      }
 
-      $endpoint= self::endpoint($environment, "invocation/{$context->awsRequestId}");
-      try {
+        $endpoint= self::endpoint($environment, "invocation/{$context->awsRequestId}");
         $invocation= $stream ? new Streaming($endpoint) : new Buffered($endpoint);
         $invocation->invoke($lambda, $event, $context);
       } catch (Throwable $t) {
-        self::endpoint($environment, "invocation/{$context->awsRequestId}/error")->post(
-          new RequestData(Json::of(self::error($t))),
-          ['Content-Type' => 'application/json']
-        );
+        Console::$err->writeLine($e);
+        break;
       }
     } while (true);
 
