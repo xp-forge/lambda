@@ -1,7 +1,7 @@
 <?php namespace xp\lambda;
 
 use Throwable, ReflectionFunction;
-use com\amazon\aws\lambda\{Context, Environment, Handler, InvokeMode};
+use com\amazon\aws\lambda\{Context, Environment, Handler, InvokeMode, RuntimeApi};
 use io\IOException;
 use lang\{XPClass, XPException, IllegalArgumentException, Environment as System};
 use peer\http\{HttpConnection, RequestData};
@@ -41,24 +41,6 @@ class AwsRunner {
   }
 
   /**
-   * Returns a lambda API endpoint using the `AWS_LAMBDA_RUNTIME_API`
-   * environment variable.
-   *
-   * @see    https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html
-   * @param  [:string] $environment
-   * @param  string $path
-   * @return peer.http.HttpConnection
-   */
-  public static function endpoint($environment, $path) {
-    $c= new HttpConnection("http://{$environment['AWS_LAMBDA_RUNTIME_API']}/2018-06-01/runtime/{$path}");
-
-    // Use a 15 minute timeout, this is the maximum lambda runtime, see
-    // https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
-    $c->setTimeout(900);
-    return $c;
-  }
-
-  /**
    * Entry point method
    *
    * @param  string[] $args
@@ -66,29 +48,25 @@ class AwsRunner {
    */
   public static function main($args) {
     $environment= System::variables();
+    $api= new RuntimeApi($environment['AWS_LAMBDA_RUNTIME_API']);
 
     // Initialization
     try {
       $lambda= self::handler($environment, Console::$out)->lambda();
-      $invokeMode= $lambda->invokeMode;
     } catch (Throwable $t) {
-      self::endpoint($environment, 'init/error')->post(
-        new RequestData(Json::of(InvokeMode::error($t))),
-        ['Content-Type' => 'application/json']
-      );
+      $api->report('init/error', $t);
       return 1;
     }
 
     // Process events using the lambda runtime interface
+    $mode= $lambda->mode($api);
     do {
       try {
-        $r= self::endpoint($environment, 'invocation/next')->get();
+        $r= $api->receive('invocation/next');
         $context= new Context($r->headers(), $environment);
         $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
 
-        $endpoint= self::endpoint($environment, "invocation/{$context->awsRequestId}");
-        $invocation= new $invokeMode($endpoint);
-        $invocation->invoke($lambda->callable, $event, $context);
+        $mode->invoke($lambda->callable, $event, $context);
       } catch (Throwable $t) {
         Console::$err->writeLine($t);
         break;

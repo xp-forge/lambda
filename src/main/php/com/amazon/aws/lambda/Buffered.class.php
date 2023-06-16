@@ -1,8 +1,6 @@
 <?php namespace com\amazon\aws\lambda;
 
-use Throwable as Any;
-use peer\http\{HttpConnection, HttpRequest, RequestData};
-use text\json\Json;
+use Throwable;
 
 /**
  * Lambda buffered response
@@ -10,12 +8,6 @@ use text\json\Json;
  * @test com.amazon.aws.lambda.unittest.BufferedTest 
  */
 class Buffered extends InvokeMode {
-  private $conn;
-
-  /** Creates a new streaming response directed at the given HTTP endpoint */
-  public function __construct(HttpConnection $conn) {
-    $this->conn= $conn;
-  }
 
   /**
    * Invokes the given lambda
@@ -28,18 +20,9 @@ class Buffered extends InvokeMode {
   public function invoke($lambda, $event, $context) {
     try {
       $result= $lambda($event, $context);
-      $target= '/response';
-    } catch (Any $e) {
-      $result= self::error($e);
-      $target= '/error';
+      return $this->api->send("invocation/{$context->awsRequestId}/response", $result);
+    } catch (Throwable $t) {
+      return $this->api->report("invocation/{$context->awsRequestId}/error", $t);
     }
-
-    $request= $this->conn->create(new HttpRequest());
-    $request->setMethod('POST');
-    $request->setHeader('Content-Type', 'application/json');
-    $request->setTarget(rtrim($request->target, '/').$target);
-    $request->setParameters(new RequestData(Json::of($result)));
-
-    return $this->conn->send($request);
   }
 }

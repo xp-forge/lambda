@@ -5,6 +5,10 @@ use peer\http\{HttpConnection, HttpOutputStream, HttpRequest, HttpResponse};
 
 class TestConnection extends HttpConnection {
 
+  public function __construct($url= 'http://test') {
+    parent::__construct($url);
+  }
+
   private function header($request) {
     $header= $request->method.' '.$request->target.' HTTP/'.$request->version."\r\n";
     foreach ($request->headers as $name => $values) {

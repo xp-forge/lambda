@@ -1,11 +1,9 @@
 <?php namespace com\amazon\aws\lambda;
 
-use Throwable as Any;
+use Throwable;
 use io\Channel;
 use io\streams\InputStream;
-use lang\{IllegalStateException, IllegalArgumentException, Throwable};
-use peer\http\{HttpConnection, HttpRequest, HttpOutputStream, RequestData};
-use text\json\Json;
+use lang\{IllegalStateException, IllegalArgumentException};
 
 /**
  * Lambda response streaming
@@ -13,17 +11,9 @@ use text\json\Json;
  * @test com.amazon.aws.lambda.unittest.StreamedTest
  */
 class Streaming extends InvokeMode implements Stream {
-  private $conn, $request;
+  private $request= null;
   private $response= null;
   private $stream= null;
-
-  /** Creates a new streaming response directed at the given HTTP endpoint */
-  public function __construct(HttpConnection $conn) {
-    $this->conn= $conn;
-
-    $this->request= $conn->create(new HttpRequest());
-    $this->request->setMethod('POST');
-  }
 
   /**
    * Starts streaming the response
@@ -33,8 +23,7 @@ class Streaming extends InvokeMode implements Stream {
   private function start() {
     $this->request->setHeader('Lambda-Runtime-Function-Response-Mode', 'streaming');
     $this->request->setHeader('Transfer-Encoding', 'chunked');
-    $this->request->setTarget(rtrim($this->request->target, '/').'/response');
-    return $this->conn->open($this->request);
+    return $this->api->stream($this->request);
   }
 
   /**
@@ -110,7 +99,7 @@ class Streaming extends InvokeMode implements Stream {
     if ($this->response) return; // Already ended
 
     $this->stream ?? $this->stream= $this->start();
-    $this->response= $this->conn->finish($this->stream);
+    $this->response= $this->api->finish($this->stream);
     $this->response->closeStream();
   }
 
@@ -124,23 +113,20 @@ class Streaming extends InvokeMode implements Stream {
    */
   public function invoke($lambda, $event, $context) {
     try {
+      $this->request= $this->api->request("invocation/{$context->awsRequestId}/response");
       $lambda($event, $context, $this);
       $this->end();
       return $this->response;
-    } catch (Any $e) {
+    } catch (Throwable $t) {
 
       // We can only report errors before starting to stream.
       if (null === $this->stream) {
-        $this->request->setHeader('Content-Type', 'application/json');
-        $this->request->setTarget(rtrim($this->request->target, '/').'/error');
-        $this->request->setParameters(new RequestData(Json::of(self::error($e))));
-
-        return $this->conn->send($this->request);
+        return $this->api->report("invocation/{$context->awsRequestId}/error", $t);
       }
 
       // TODO: Use HTTP trailers to report back errors
       $this->end();
-      throw $e;
+      throw $t;
     }
   }
 }

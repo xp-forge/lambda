@@ -1,6 +1,6 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\{Context, Buffered};
+use com\amazon\aws\lambda\{Context, Buffered, RuntimeApi};
 use lang\IllegalStateException;
 use test\{Assert, Test};
 
@@ -14,13 +14,13 @@ class BufferedTest {
    * @return string
    */
   private function invoke($lambda) {
-    $stream= new Buffered(new TestConnection('http://test/2018-06-01/runtime/invocation/1234/'));
+    $stream= new Buffered(new RuntimeApi(new TestConnection()));
     return $stream->invoke($lambda, null, new Context($this->headers, $this->environment))->readData();
   }
 
   #[Test]
   public function can_create() {
-    new Buffered(new TestConnection('http://test/2018-06-01/runtime/invocation/1234/'));
+    new Buffered(new RuntimeApi(new TestConnection()));
   }
 
   #[Test]
@@ -30,7 +30,7 @@ class BufferedTest {
     });
 
     Assert::equals(
-      "POST /2018-06-01/runtime/invocation/1234/response HTTP/1.1\r\n".
+      "POST /2018-06-01/runtime/invocation/3e1afeb0-cde4-1d0e-c3c0-66b15046bb88/response HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
@@ -48,7 +48,7 @@ class BufferedTest {
     });
 
     Assert::equals(
-      "POST /2018-06-01/runtime/invocation/1234/error HTTP/1.1\r\n".
+      "POST /2018-06-01/runtime/invocation/3e1afeb0-cde4-1d0e-c3c0-66b15046bb88/error HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
