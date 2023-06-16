@@ -6,7 +6,7 @@ use peer\http\{HttpConnection, HttpOutputStream, HttpRequest, HttpResponse};
 class TestConnection extends HttpConnection {
 
   private function header($request) {
-    $header= $request->method.' '.$request->target().' HTTP/'.$request->version."\r\n";
+    $header= $request->method.' '.$request->target.' HTTP/'.$request->version."\r\n";
     foreach ($request->headers as $name => $values) {
       foreach ($values as $value) {
         $header.= $name.': '.$value."\r\n";
@@ -23,7 +23,7 @@ class TestConnection extends HttpConnection {
     )));
   }
 
-  public function send(HttpRequest $request) { return $this->response($this->header($request)."\r\n"); }
+  public function send(HttpRequest $request) { return $this->response($request->getRequestString()); }
 
   public function open(HttpRequest $request) { return new TestOutputStream($this->header($request)); }
 

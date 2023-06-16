@@ -1,17 +1,18 @@
 <?php namespace com\amazon\aws\lambda;
 
+use Throwable as Any;
 use io\Channel;
 use io\streams\InputStream;
-use lang\{IllegalStateException, IllegalArgumentException};
-use peer\http\{HttpConnection, HttpRequest};
+use lang\{IllegalStateException, IllegalArgumentException, Throwable};
+use peer\http\{HttpConnection, HttpRequest, HttpOutputStream, RequestData};
+use text\json\Json;
 
 /**
  * Lambda response streaming
  *
  * @test com.amazon.aws.lambda.unittest.StreamingTest 
- * @see   https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html#runtimes-custom-response-streaming
  */
-class Streaming {
+class Streaming extends InvokeMode {
   private $conn, $request;
   private $response= null;
   private $stream= null;
@@ -22,8 +23,18 @@ class Streaming {
 
     $this->request= $conn->create(new HttpRequest());
     $this->request->setMethod('POST');
+  }
+
+  /**
+   * Starts streaming the response
+   *
+   * @return peer.http.HttpOutputStream
+   */
+  private function start() {
     $this->request->setHeader('Lambda-Runtime-Function-Response-Mode', 'streaming');
     $this->request->setHeader('Transfer-Encoding', 'chunked');
+    $this->request->setTarget(rtrim($this->request->target, '/').'/response');
+    return $this->conn->open($this->request);
   }
 
   /**
@@ -49,7 +60,7 @@ class Streaming {
   public function write($bytes) {
     if ($this->response) throw new IllegalStateException('Streaming ended');
 
-    $this->stream ?? $this->stream= $this->conn->open($this->request);
+    $this->stream ?? $this->stream= $this->start();
     $this->stream->write($bytes);
     $this->stream->flush();
   }
@@ -78,7 +89,7 @@ class Streaming {
       $this->request->setHeader('Content-Type', $mimeType);
     }
 
-    $this->stream ?? $this->stream= $this->conn->open($this->request);
+    $this->stream ?? $this->stream= $this->start();
     try {
       while ($in->available()) {
         $this->stream->write($in->read());
@@ -95,25 +106,41 @@ class Streaming {
    *
    * @return void
    */
-  public function end() {
-    if ($this->response) {
-      // Already ended
-    } else if ($this->stream) {
-      $this->response= $this->conn->finish($this->stream);
-      $this->response->closeStream();
-    } else {
-      $this->response= $this->conn->send($this->request);
-      $this->response->closeStream();
-    }
+  public function end() {      
+    if ($this->response) return; // Already ended
+
+    $this->stream ?? $this->stream= $this->start();
+    $this->response= $this->conn->finish($this->stream);
+    $this->response->closeStream();
   }
 
+  /**
+   * Invokes the given lambda
+   *
+   * @param  callable $lambda
+   * @param  var $event
+   * @param  com.amazon.aws.lambda.Context $context
+   * @return peer.HttpResponse
+   */
   public function invoke($lambda, $event, $context) {
     try {
       $lambda($event, $context, $this);
-    } finally {
-      $this->end(); // Ensure response is sent and stream is closed
-    }
+      $this->end();
+      return $this->response;
+    } catch (Any $e) {
 
-    return $this->response;
+      // We can only report errors before starting to stream.
+      if (null === $this->stream) {
+        $this->request->setHeader('Content-Type', 'application/json');
+        $this->request->setTarget(rtrim($this->request->target, '/').'/error');
+        $this->request->setParameters(new RequestData(Json::of(self::error($e))));
+
+        return $this->conn->send($this->request);
+      }
+
+      // TODO: Use HTTP trailers to report back errors
+      $this->end();
+      throw $e;
+    }
   }
 }

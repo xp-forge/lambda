@@ -59,33 +59,6 @@ class AwsRunner {
   }
 
   /**
-   * Marshals an error according to the AWS specification.
-   *
-   * @param  Throwable $e
-   * @return [:var]
-   */
-  public static function error($e) {
-    $error= ['errorMessage' => $e->getMessage(), 'errorType' => nameof($e), 'stackTrace' => []];
-
-    $t= XPException::wrap($e);
-    do {
-      $error['stackTrace'][]= $t->compoundMessage();
-      foreach ($t->getStackTrace() as $e) {
-        $error['stackTrace'][]= sprintf(
-          '%s::%s(...) (line %d of %s)%s',
-          strtr($e->class, '\\', '.') ?: '<main>',
-          $e->method,
-          $e->line,
-          $e->file ? basename($e->file) : '',
-          $e->message ? ' - '.$e->message : ''
-        );
-      }
-    } while ($t= $t->getCause());
-
-    return $error;
-  }
-
-  /**
    * Entry point method
    *
    * @param  string[] $args
@@ -115,33 +88,15 @@ class AwsRunner {
       } catch (IOException $e) {
         Console::$err->writeLine($e);
         break;
+      }
+
+      $endpoint= self::endpoint($environment, "invocation/{$context->awsRequestId}");
+      try {
+        $invocation= $stream ? new Streaming($endpoint) : new Buffered($endpoint);
+        $invocation->invoke($lambda, $event, $context);
       } catch (Throwable $t) {
         self::endpoint($environment, "invocation/{$context->awsRequestId}/error")->post(
           new RequestData(Json::of(self::error($t))),
-          ['Content-Type' => 'application/json']
-        );
-        continue;
-      }
-
-      if ($stream) {
-        $streaming= new Streaming(self::endpoint($environment, "invocation/{$context->awsRequestId}/response"));
-        try {
-          $streaming->invoke($lambda, $event, $context);
-        } catch (Throwable $t) {
-          Console::$err->writeLine($e);
-          break;
-        }
-      } else {
-        try {
-          $type= 'response';
-          $response= $lambda($event, $context);
-        } catch (Throwable $t) {
-          $type= 'error';
-          $response= self::error($t);
-        }
-
-        self::endpoint($environment, "invocation/{$context->awsRequestId}/{$type}")->post(
-          new RequestData(Json::of($response)),
           ['Content-Type' => 'application/json']
         );
       }
