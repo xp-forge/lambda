@@ -1,5 +1,6 @@
 <?php namespace com\amazon\aws\lambda;
 
+use lang\IllegalStateException;
 use peer\http\{HttpConnection, HttpRequest};
 
 /**
@@ -27,8 +28,11 @@ class Streaming {
    *
    * @param  string $mime
    * @return void
+   * @throws lang.IllegalStateException
    */
   public function use($mime) {
+    if ($this->response) throw new IllegalStateException('Streaming ended');
+
     $this->request->setHeader('Content-Type', $mime);
   }
 
@@ -37,13 +41,21 @@ class Streaming {
    *
    * @param  string $bytes
    * @return void
+   * @throws lang.IllegalStateException
    */
   public function write($bytes) {
+    if ($this->response) throw new IllegalStateException('Streaming ended');
+
     $this->stream ?? $this->stream= $this->conn->open($this->request);
     $this->stream->write($bytes);
     $this->stream->flush();
   }
 
+  /**
+   * Ends this response stream
+   *
+   * @return void
+   */
   public function end() {
     if ($this->response) {
       // Already ended

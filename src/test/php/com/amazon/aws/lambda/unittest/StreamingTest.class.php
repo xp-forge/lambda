@@ -1,7 +1,8 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
 use com\amazon\aws\lambda\Streaming;
-use test\{Assert, Test};
+use lang\IllegalStateException;
+use test\{Assert, Expect, Test};
 
 class StreamingTest {
 
@@ -57,5 +58,21 @@ class StreamingTest {
       "data: One\n\ndata: Two\n\n",
       $response
     );
+  }
+
+  #[Test, Expect(IllegalStateException::class)]
+  public function writing_after_end() {
+    $this->invoke(function($event, $context, $stream) {
+      $stream->end();
+      $stream->write('Test');
+    });
+  }
+
+  #[Test, Expect(IllegalStateException::class)]
+  public function changing_mime_type_after_end() {
+    $this->invoke(function($event, $context, $stream) {
+      $stream->end();
+      $stream->use('text/plain');
+    });
   }
 }
