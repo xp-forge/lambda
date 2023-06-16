@@ -1,6 +1,8 @@
 <?php namespace com\amazon\aws\lambda;
 
-use lang\IllegalStateException;
+use io\Channel;
+use io\streams\InputStream;
+use lang\{IllegalStateException, IllegalArgumentException};
 use peer\http\{HttpConnection, HttpRequest};
 
 /**
@@ -26,14 +28,14 @@ class Streaming {
   /**
    * Uses given mime type
    *
-   * @param  string $mime
+   * @param  string $mimeType
    * @return void
    * @throws lang.IllegalStateException
    */
-  public function use($mime) {
+  public function use($mimeType) {
     if ($this->response) throw new IllegalStateException('Streaming ended');
 
-    $this->request->setHeader('Content-Type', $mime);
+    $this->request->setHeader('Content-Type', $mimeType);
   }
 
   /**
@@ -49,6 +51,42 @@ class Streaming {
     $this->stream ?? $this->stream= $this->conn->open($this->request);
     $this->stream->write($bytes);
     $this->stream->flush();
+  }
+
+  /**
+   * Transmits a given source to the output asynchronously.
+   *
+   * @param  io.Channel|io.streams.InputStream $source
+   * @param  string $mimeType
+   * @return void
+   * @throws lang.IllegalArgumentException
+   * @throws lang.IllegalStateException
+   */
+  public function transmit($source, $mimeType= null) {
+    if ($this->response) throw new IllegalStateException('Streaming ended');
+
+    if ($source instanceof InputStream) {
+      $in= $source;
+    } else if ($source instanceof Channel) {
+      $in= $source->in();
+    } else {
+      throw new IllegalArgumentException('Expected either a channel or an input stream, have '.typeof($source));
+    }
+
+    if (null !== $mimeType) {
+      $this->request->setHeader('Content-Type', $mimeType);
+    }
+
+    $this->stream ?? $this->stream= $this->conn->open($this->request);
+    try {
+      while ($in->available()) {
+        $this->stream->write($in->read());
+        $this->stream->flush();
+      }
+    } finally {
+      $in->close();
+      $this->end();
+    }
   }
 
   /**
