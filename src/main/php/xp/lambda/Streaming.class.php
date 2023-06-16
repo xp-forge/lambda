@@ -2,7 +2,12 @@
 
 use peer\http\{HttpConnection, HttpRequest};
 
-/** @see https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html#runtimes-custom-response-streaming */
+/**
+ * Lambda response streaming
+ *
+ * @test com.amazon.aws.lambda.unittest.StreamingTest 
+ * @see   https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html#runtimes-custom-response-streaming
+ */
 class Streaming {
   private $conn, $request;
   private $response= null;
