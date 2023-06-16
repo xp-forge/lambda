@@ -1,11 +1,12 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\Streaming;
+use com\amazon\aws\lambda\{Context, Streaming};
 use io\streams\MemoryInputStream;
 use lang\IllegalStateException;
 use test\{Assert, Expect, Test};
 
 class StreamingTest {
+  use TestContext;
 
   /**
    * Invokes a lambda and returns the response
@@ -15,7 +16,7 @@ class StreamingTest {
    */
   private function invoke($lambda) {
     $stream= new Streaming(new TestConnection('http://test'));
-    return $stream->invoke($lambda, null, null)->readData();
+    return $stream->invoke($lambda, null, new Context($this->headers, $this->environment))->readData();
   }
 
   #[Test]
