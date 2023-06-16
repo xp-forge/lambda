@@ -15,7 +15,8 @@ class Streaming {
   private $conn, $request;
   private $response= null;
   private $stream= null;
-  
+
+  /** Creates a new streaming response directed at the given HTTP endpoint */
   public function __construct(HttpConnection $conn) {
     $this->conn= $conn;
 
