@@ -15,13 +15,13 @@ class StreamingTest {
    * @return string
    */
   private function invoke($lambda) {
-    $stream= new Streaming(new TestConnection('http://test/2018-06-01/runtime/'));
+    $stream= new Streaming(new TestConnection('http://test/2018-06-01/runtime/invocation/1234'));
     return $stream->invoke($lambda, null, new Context($this->headers, $this->environment))->readData();
   }
 
   #[Test]
   public function can_create() {
-    new Streaming(new TestConnection('http://test/2018-06-01/runtime/'));
+    new Streaming(new TestConnection('http://test/2018-06-01/runtime/invocation/1234'));
   }
 
   #[Test]
@@ -31,7 +31,7 @@ class StreamingTest {
     });
 
     Assert::equals(
-      "POST /2018-06-01/runtime/response HTTP/1.1\r\n".
+      "POST /2018-06-01/runtime/invocation/1234/response HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Lambda-Runtime-Function-Response-Mode: streaming\r\n".
@@ -48,7 +48,7 @@ class StreamingTest {
     });
 
     Assert::equals(
-      "POST /2018-06-01/runtime/error HTTP/1.1\r\n".
+      "POST /2018-06-01/runtime/invocation/1234/error HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
@@ -67,7 +67,7 @@ class StreamingTest {
     });
 
     Assert::equals(
-      "POST /2018-06-01/runtime/response HTTP/1.1\r\n".
+      "POST /2018-06-01/runtime/invocation/1234/response HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: text/event-stream\r\n".
@@ -86,7 +86,7 @@ class StreamingTest {
     });
 
     Assert::equals(
-      "POST /2018-06-01/runtime/response HTTP/1.1\r\n".
+      "POST /2018-06-01/runtime/invocation/1234/response HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".

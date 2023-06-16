@@ -1,7 +1,7 @@
 <?php namespace xp\lambda;
 
 use Throwable, ReflectionFunction;
-use com\amazon\aws\lambda\{Context, Environment, Handler, Streaming};
+use com\amazon\aws\lambda\{Context, Environment, Handler, Streaming, Buffered, InvokeMode};
 use io\IOException;
 use lang\{XPClass, XPException, IllegalArgumentException, Environment as System};
 use peer\http\{HttpConnection, RequestData};
@@ -73,7 +73,7 @@ class AwsRunner {
       $stream= (new ReflectionFunction($lambda))->getNumberOfParameters() >= 3;
     } catch (Throwable $t) {
       self::endpoint($environment, 'init/error')->post(
-        new RequestData(Json::of(self::error($t))),
+        new RequestData(Json::of(InvokeMode::error($t))),
         ['Content-Type' => 'application/json']
       );
       return 1;

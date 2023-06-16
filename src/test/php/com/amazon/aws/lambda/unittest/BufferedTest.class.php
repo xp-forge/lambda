@@ -14,13 +14,13 @@ class BufferedTest {
    * @return string
    */
   private function invoke($lambda) {
-    $stream= new Buffered(new TestConnection('http://test/2018-06-01/runtime/'));
+    $stream= new Buffered(new TestConnection('http://test/2018-06-01/runtime/invocation/1234/'));
     return $stream->invoke($lambda, null, new Context($this->headers, $this->environment))->readData();
   }
 
   #[Test]
   public function can_create() {
-    new Buffered(new TestConnection('http://test/2018-06-01/runtime/'));
+    new Buffered(new TestConnection('http://test/2018-06-01/runtime/invocation/1234/'));
   }
 
   #[Test]
@@ -30,7 +30,7 @@ class BufferedTest {
     });
 
     Assert::equals(
-      "POST /2018-06-01/runtime/response HTTP/1.1\r\n".
+      "POST /2018-06-01/runtime/invocation/1234/response HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
@@ -48,7 +48,7 @@ class BufferedTest {
     });
 
     Assert::equals(
-      "POST /2018-06-01/runtime/error HTTP/1.1\r\n".
+      "POST /2018-06-01/runtime/invocation/1234/error HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
