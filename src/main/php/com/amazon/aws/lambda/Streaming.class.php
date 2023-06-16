@@ -1,4 +1,4 @@
-<?php namespace xp\lambda;
+<?php namespace com\amazon\aws\lambda;
 
 use peer\http\{HttpConnection, HttpRequest};
 

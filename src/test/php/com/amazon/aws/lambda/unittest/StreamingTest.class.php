@@ -1,14 +1,14 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
+use com\amazon\aws\lambda\Streaming;
 use test\{Assert, Test};
-use xp\lambda\Streaming;
 
 class StreamingTest {
 
   /**
    * Invokes a lambda and returns the response
    * 
-   * @param  function(var, com.amazon.aws.Context, xp.lambda.Streaming): void
+   * @param  function(var, com.amazon.aws.lambda.Context, com.amazon.aws.lambda.Streaming): void
    * @return string
    */
   private function invoke($lambda) {
