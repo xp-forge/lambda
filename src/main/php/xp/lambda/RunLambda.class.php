@@ -1,6 +1,6 @@
 <?php namespace xp\lambda;
 
-use com\amazon\aws\lambda\{Context, Environment, Handler, Streamed, Streaming};
+use com\amazon\aws\lambda\{Context, Environment, Handler, Streaming, Stream};
 use lang\{XPClass, Throwable, IllegalArgumentException};
 use util\UUID;
 use util\cmd\Console;
@@ -50,9 +50,9 @@ class RunLambda {
     }
 
     // Handle streaming vs. buffered lambdas
-    if ($lambda->invokeMode === Streamed::class) {
+    if ($lambda->invokeMode === Streaming::class) {
       $invocation= function($callable, $event, $context) {
-        $callable($event, $context, new class() implements Streaming {
+        $callable($event, $context, new class() implements Stream {
           public function transmit($source, $mime= null) {
             $in= $source instanceof Channel ? $source->in() : $source;
             while ($in->available()) {
