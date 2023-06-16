@@ -29,7 +29,7 @@ abstract class Handler {
       return new Invokeable([$target, 'process'], Buffered::class);
     } else if (is_callable($target)) {
       $n= (new \ReflectionFunction($target))->getNumberOfParameters();
-      return new Invokeable($target, $n < 3 ? Buffered::class : Streaming::class);
+      return new Invokeable($target, $n < 3 ? Buffered::class : Streamed::class);
     } else {
       throw new IllegalArgumentException('Expected either a callable or a Lambda instance, have '.typeof($target));
     }

@@ -1,11 +1,11 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\{Context, Streaming};
+use com\amazon\aws\lambda\{Context, Streamed};
 use io\streams\MemoryInputStream;
 use lang\IllegalStateException;
 use test\{Assert, Expect, Test};
 
-class StreamingTest {
+class StreamedTest {
   use TestContext;
 
   /**
@@ -15,13 +15,13 @@ class StreamingTest {
    * @return string
    */
   private function invoke($lambda) {
-    $stream= new Streaming(new TestConnection('http://test/2018-06-01/runtime/invocation/1234'));
+    $stream= new Streamed(new TestConnection('http://test/2018-06-01/runtime/invocation/1234'));
     return $stream->invoke($lambda, null, new Context($this->headers, $this->environment))->readData();
   }
 
   #[Test]
   public function can_create() {
-    new Streaming(new TestConnection('http://test/2018-06-01/runtime/invocation/1234'));
+    new Streamed(new TestConnection('http://test/2018-06-01/runtime/invocation/1234'));
   }
 
   #[Test]
@@ -52,7 +52,7 @@ class StreamingTest {
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
-      "Content-Length: 760\r\n".
+      "Content-Length: 753\r\n".
       "\r\n",
       substr($response, 0, strpos($response, "\r\n\r\n") + 4)
     );

@@ -1,6 +1,6 @@
 <?php namespace xp\lambda;
 
-use com\amazon\aws\lambda\{Context, Environment, Handler};
+use com\amazon\aws\lambda\{Context, Environment, Handler, Streamed, Streaming};
 use lang\{XPClass, Throwable, IllegalArgumentException};
 use util\UUID;
 use util\cmd\Console;
@@ -49,6 +49,28 @@ class RunLambda {
       return 127;
     }
 
+    // Handle streaming vs. buffered lambdas
+    if ($lambda->invokeMode === Streamed::class) {
+      $invocation= function($callable, $event, $context) {
+        $callable($event, $context, new class() implements Streaming {
+          public function transmit($source, $mime= null) {
+            $in= $source instanceof Channel ? $source->in() : $source;
+            while ($in->available()) {
+              Console::$out->write($in->read());
+            }
+          }
+          public function use($mime) { /** NOOP */ }
+          public function write($bytes) { Console::$out->write($bytes); }
+          public function end() { /** NOOP */ }
+        });
+      };
+    } else {
+      $invocation= function($callable, $event, $context) {
+        $result= $callable($event, $context);
+        Console::$out->writeLine($result);
+      };
+    }
+
     $status= 0;
     foreach ($this->events as $event) {
       $headers= [
@@ -60,8 +82,7 @@ class RunLambda {
       ];
 
       try {
-        $result= ($lambda->callable)(json_decode($event, true), new Context($headers, $environment));
-        Console::$out->writeLine($result);
+        $invocation($lambda->callable, json_decode($event, true), new Context($headers, $environment));
       } catch (Throwable $e) {
         Console::$err->writeLine($e);
         $status= 1;
