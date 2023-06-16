@@ -34,7 +34,7 @@ class HandlerTest {
         return function($event, $context) { return 'Test'; };
       }
     };
-    Assert::equals('Test', ($fixture->lambda())(null, new Context($this->headers, [])));
+    Assert::equals('Test', ($fixture->lambda()->callable)(null, new Context($this->headers, [])));
   }
 
   #[Test]
@@ -46,7 +46,7 @@ class HandlerTest {
         };
       }
     };
-    Assert::equals('Test', ($fixture->lambda())(null, new Context($this->headers, [])));
+    Assert::equals('Test', ($fixture->lambda()->callable)(null, new Context($this->headers, [])));
   }
 
   #[Test, Expect(IllegalArgumentException::class)]

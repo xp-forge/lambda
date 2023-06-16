@@ -1,7 +1,7 @@
 <?php namespace xp\lambda;
 
 use Throwable, ReflectionFunction;
-use com\amazon\aws\lambda\{Context, Environment, Handler, Streaming, Buffered, InvokeMode};
+use com\amazon\aws\lambda\{Context, Environment, Handler, InvokeMode};
 use io\IOException;
 use lang\{XPClass, XPException, IllegalArgumentException, Environment as System};
 use peer\http\{HttpConnection, RequestData};
@@ -70,7 +70,7 @@ class AwsRunner {
     // Initialization
     try {
       $lambda= self::handler($environment, Console::$out)->lambda();
-      $stream= (new ReflectionFunction($lambda))->getNumberOfParameters() >= 3;
+      $invokeMode= $lambda->invokeMode;
     } catch (Throwable $t) {
       self::endpoint($environment, 'init/error')->post(
         new RequestData(Json::of(InvokeMode::error($t))),
@@ -87,10 +87,10 @@ class AwsRunner {
         $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
 
         $endpoint= self::endpoint($environment, "invocation/{$context->awsRequestId}");
-        $invocation= $stream ? new Streaming($endpoint) : new Buffered($endpoint);
-        $invocation->invoke($lambda, $event, $context);
+        $invocation= new $invokeMode($endpoint);
+        $invocation->invoke($lambda->callable, $event, $context);
       } catch (Throwable $t) {
-        Console::$err->writeLine($e);
+        Console::$err->writeLine($t);
         break;
       }
     } while (true);

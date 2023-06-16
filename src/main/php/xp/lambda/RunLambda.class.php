@@ -60,7 +60,7 @@ class RunLambda {
       ];
 
       try {
-        $result= $lambda(json_decode($event, true), new Context($headers, $environment));
+        $result= ($lambda->callable)(json_decode($event, true), new Context($headers, $environment));
         Console::$out->writeLine($result);
       } catch (Throwable $e) {
         Console::$err->writeLine($e);
