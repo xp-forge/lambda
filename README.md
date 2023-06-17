@@ -87,12 +87,12 @@ Any non-string arguments passed will be converted to string using `util.Objects:
 This library supports AWS Lambda response streaming as [announced by AWS in April 2023](https://aws.amazon.com/de/blogs/compute/introducing-aws-lambda-response-streaming/). To use the stream, return a `function(var, Stream, Context)` from the handler's *target()* method instead of a `function(var, Context)`:
 
 ```php
-use com\amazon\aws\lambda\Handler;
+use com\amazon\aws\lambda\{Context, Handler, Stream};
 
 class Streamed extends Handler {
 
   public function target(): callable {
-    return function($event, $stream, $context) {
+    return function($event, Stream $stream, Context $context) {
       $stream->use('text/plain');
       $stream->write("[".date('r')."] Hello world...\n");
 
@@ -105,16 +105,9 @@ class Streamed extends Handler {
 }
 ```
 
-The stream API is defined as follows:
+Invoking this lambda will yield the following:
 
-```php
-public interface com.amazon.aws.lambda.Stream {
-  public abstract function transmit(io.Channel|io.streams.InputStream $source, string $mimeType): void
-  public abstract function use(string $mimeType): void
-  public abstract function write(string $bytes): void
-  public abstract function end(): void
-}
-```
+![Streaming in Terminal](https://github.com/xp-forge/lambda/assets/696742/41785beb-3903-45a0-a2ec-2c7c27c2c7b4)
 
 Development
 -----------
