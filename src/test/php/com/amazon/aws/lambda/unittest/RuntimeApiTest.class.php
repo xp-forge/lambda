@@ -36,24 +36,25 @@ class RuntimeApiTest {
 
   #[Test]
   public function return_function() {
-    $runtime= new RuntimeApi('localhost:9000');
-    $invokeable= $runtime->invokeable(function($event, $context) { return 'Test'; });
+    $invokeable= (new RuntimeApi('localhost:9000'))->invokeable(function($event, $context) {
+      return 'Test';
+    });
+
     Assert::equals('Test', ($invokeable->callable)(null, new Context($this->headers, [])));
   }
 
   #[Test]
   public function return_lambda() {
-    $runtime= new RuntimeApi('localhost:9000');
-    $invokeable= $runtime->invokeable(new class() implements Lambda {
+    $invokeable= (new RuntimeApi('localhost:9000'))->invokeable(new class() implements Lambda {
       public function process($event, $context) { return 'Test'; }
     });
+
     Assert::equals('Test', ($invokeable->callable)(null, new Context($this->headers, [])));
   }
 
   #[Test]
   public function return_streaming() {
-    $runtime= new RuntimeApi('localhost:9000');
-    $invokeable= $runtime->invokeable(new class() implements Streaming {
+    $invokeable= (new RuntimeApi('localhost:9000'))->invokeable(new class() implements Streaming {
       public function handle($event, $stream, $context) { $stream->write('Test'); }
     });
     $stream= new class() implements Stream {
@@ -63,14 +64,13 @@ class RuntimeApiTest {
       public function write($bytes) { $this->written.= $bytes; }
       public function end() { /** NOOP */ }
     };
-    ($invokeable->callable)(null, $stream, new Context($this->headers, []));
 
+    ($invokeable->callable)(null, $stream, new Context($this->headers, []));
     Assert::equals('Test', $stream->written);
   }
 
   #[Test, Expect(IllegalArgumentException::class)]
   public function cannot_return_null() {
-    $runtime= new RuntimeApi('localhost:9000');
-    $runtime->invokeable(null);
+    (new RuntimeApi('localhost:9000'))->invokeable(null);
   }
 }
