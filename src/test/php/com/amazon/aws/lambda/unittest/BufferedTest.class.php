@@ -1,18 +1,16 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\{Context, Buffered, RuntimeApi};
+use com\amazon\aws\lambda\Context;
 use lang\IllegalStateException;
-use test\{Assert, Before, Test};
+use test\{Assert, Test};
 
 class BufferedTest {
-  use TestContext;
-
-  private $runtime;
+  use TestContext, TestRuntime;
 
   /**
    * Invokes a lambda and returns the response
    * 
-   * @param  function(var, com.amazon.aws.lambda.Context, com.amazon.aws.lambda.Streaming): void
+   * @param  function(var, com.amazon.aws.lambda.Context, com.amazon.aws.lambda.Stream): void
    * @return string
    */
   private function invoke($lambda) {
@@ -21,11 +19,6 @@ class BufferedTest {
       ->invoke($lambda, null, new Context($this->headers, $this->environment))
       ->readData()
     ;
-  }
-
-  #[Before]
-  public function runtime() {
-    $this->runtime= new RuntimeApi(new TestConnection());
   }
 
   #[Test]

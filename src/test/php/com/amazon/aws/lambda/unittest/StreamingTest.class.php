@@ -1,12 +1,12 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\{Context, Streaming, RuntimeApi};
+use com\amazon\aws\lambda\Context;
 use io\streams\MemoryInputStream;
 use lang\IllegalStateException;
 use test\{Assert, Expect, Test};
 
 class StreamingTest {
-  use TestContext;
+  use TestContext, TestRuntime;
 
   /**
    * Invokes a lambda and returns the response
@@ -15,13 +15,16 @@ class StreamingTest {
    * @return string
    */
   private function invoke($lambda) {
-    $stream= new Streaming(new RuntimeApi(new TestConnection()));
-    return $stream->invoke($lambda, null, new Context($this->headers, $this->environment))->readData();
+    return $this->runtime
+      ->streaming()
+      ->invoke($lambda, null, new Context($this->headers, $this->environment))
+      ->readData()
+    ;
   }
 
   #[Test]
   public function can_create() {
-    new Streaming(new RuntimeApi(new TestConnection()));
+    $this->runtime->streaming();
   }
 
   #[Test]

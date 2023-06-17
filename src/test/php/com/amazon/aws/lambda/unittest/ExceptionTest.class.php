@@ -1,16 +1,10 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\RuntimeApi;
 use lang\{IllegalArgumentException, IllegalStateException};
-use test\{Assert, Before, Test};
+use test\{Assert, Test};
 
 class ExceptionTest {
-  private $runtime;
-
-  #[Before]
-  public function runtime() {
-    $this->runtime= new RuntimeApi('test');
-  }
+  use TestRuntime;
 
   #[Test]
   public function includes_errorMessage() {
