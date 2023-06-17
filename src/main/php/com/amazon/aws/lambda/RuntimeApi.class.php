@@ -55,7 +55,7 @@ class RuntimeApi {
       private function start() {
         $this->request->setHeader('Lambda-Runtime-Function-Response-Mode', 'streaming');
         $this->request->setHeader('Transfer-Encoding', 'chunked');
-        return $this->api->stream($this->request);
+        return $this->api->conn->open($this->request);
       }
 
       public function transmit($source, $mimeType= null) {
@@ -103,7 +103,7 @@ class RuntimeApi {
         if ($this->response) return; // Already ended
 
         $this->stream ?? $this->stream= $this->start();
-        $this->response= $this->api->finish($this->stream);
+        $this->response= $this->api->conn->finish($this->stream);
         $this->response->closeStream();
       }
 
@@ -166,26 +166,6 @@ class RuntimeApi {
     $request->setMethod('POST');
     $request->setTarget("/{$this->version}/runtime/{$endpoint}");
     return $request;
-  }
-
-  /**
-   * Starts a stream for a given request
-   * 
-   * @param  peer.http.HttpRequest
-   * @return peer.http.HttpOutputStream
-   */
-  public function stream($request) {
-    return $this->conn->open($request);
-  }
-
-  /**
-   * Finishes a stream for a given request
-   * 
-   * @param  peer.http.HttpOutputStream
-   * @return peer.http.HttpResponse
-   */
-  public function finish($stream) {
-    return $this->conn->finish($stream);
   }
 
   /**
