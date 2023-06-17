@@ -5,8 +5,8 @@ use io\streams\MemoryInputStream;
 use lang\IllegalStateException;
 use test\{Assert, Expect, Test};
 
-class StreamingTest {
-  use TestContext, TestRuntime;
+class StreamingTest extends RuntimeTest {
+  use TestContext;
 
   /**
    * Invokes a lambda and returns the response

@@ -3,8 +3,8 @@
 use com\amazon\aws\lambda\RuntimeApi;
 use test\Before;
 
-trait TestRuntime {
-  private $runtime;
+abstract class RuntimeTest {
+  protected $runtime;
 
   #[Before]
   public function runtime() {

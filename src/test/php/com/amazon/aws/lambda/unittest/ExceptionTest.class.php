@@ -3,8 +3,7 @@
 use lang\{IllegalArgumentException, IllegalStateException};
 use test\{Assert, Test};
 
-class ExceptionTest {
-  use TestRuntime;
+class ExceptionTest extends RuntimeTest {
 
   #[Test]
   public function includes_errorMessage() {

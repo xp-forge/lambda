@@ -4,8 +4,8 @@ use com\amazon\aws\lambda\Context;
 use lang\IllegalStateException;
 use test\{Assert, Test};
 
-class BufferedTest {
-  use TestContext, TestRuntime;
+class BufferedTest extends RuntimeTest {
+  use TestContext;
 
   /**
    * Invokes a lambda and returns the response

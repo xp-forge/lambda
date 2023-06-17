@@ -4,9 +4,7 @@ use com\amazon\aws\lambda\{Context, Environment, Handler, Lambda, RuntimeApi};
 use lang\IllegalArgumentException;
 use test\{Assert, Expect, Test};
 
-class HandlerTest {
-  use TestRuntime;
-
+class HandlerTest extends RuntimeTest {
   private $headers= [
     'Lambda-Runtime-Aws-Request-Id'       => ['3e1afeb0-cde4-1d0e-c3c0-66b15046bb88'],
     'Lambda-Runtime-Invoked-Function-Arn' => ['arn:aws:lambda:us-east-1:1185465369:function:test'],
