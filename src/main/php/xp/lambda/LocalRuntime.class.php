@@ -1,6 +1,7 @@
 <?php namespace xp\lambda;
 
 use com\amazon\aws\lambda\{InvokeMode, Stream, RuntimeApi};
+use io\Channel;
 
 class LocalRuntime extends RuntimeApi {
   public $out;

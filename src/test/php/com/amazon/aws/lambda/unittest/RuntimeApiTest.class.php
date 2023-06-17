@@ -1,6 +1,6 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\{Context, RuntimeApi, Lambda, Streaming};
+use com\amazon\aws\lambda\{Context, RuntimeApi, Lambda, Stream, Streaming};
 use lang\IllegalArgumentException;
 use test\{Assert, Expect, Test};
 
@@ -48,6 +48,24 @@ class RuntimeApiTest {
       public function process($event, $context) { return 'Test'; }
     });
     Assert::equals('Test', ($invokeable->callable)(null, new Context($this->headers, [])));
+  }
+
+  #[Test]
+  public function return_streaming() {
+    $runtime= new RuntimeApi('localhost:9000');
+    $invokeable= $runtime->invokeable(new class() implements Streaming {
+      public function handle($event, $stream, $context) { $stream->write('Test'); }
+    });
+    $stream= new class() implements Stream {
+      public $written= '';
+      public function transmit($source, $mime= null) { /* NOOP */ }
+      public function use($mime) { /** NOOP */ }
+      public function write($bytes) { $this->written.= $bytes; }
+      public function end() { /** NOOP */ }
+    };
+    ($invokeable->callable)(null, $stream, new Context($this->headers, []));
+
+    Assert::equals('Test', $stream->written);
   }
 
   #[Test, Expect(IllegalArgumentException::class)]
