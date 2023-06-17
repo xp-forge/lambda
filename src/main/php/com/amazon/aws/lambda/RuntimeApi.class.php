@@ -1,6 +1,6 @@
 <?php namespace com\amazon\aws\lambda;
 
-use ReflectionFunction, Throwable as Any;
+use ReflectionFunction, ReflectionMethod, Throwable as Any;
 use io\Channel;
 use io\streams\InputStream;
 use lang\{Throwable, IllegalStateException, IllegalArgumentException};
@@ -146,6 +146,9 @@ class RuntimeApi {
       return new Invokeable([$target, 'process'], $this->buffered());
     } else if ($target instanceof Streaming) {
       return new Invokeable([$target, 'handle'], $this->streaming());
+    } else if (is_array($target)) {
+      $n= (new ReflectionMethod($target[0], $target[1]))->getNumberOfParameters();
+      return new Invokeable($target, $n < 3 ? $this->buffered() : $this->streaming());
     } else if (is_callable($target)) {
       $n= (new ReflectionFunction($target))->getNumberOfParameters();
       return new Invokeable($target, $n < 3 ? $this->buffered() : $this->streaming());

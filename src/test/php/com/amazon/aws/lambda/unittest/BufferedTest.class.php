@@ -21,6 +21,11 @@ class BufferedTest extends RuntimeTest {
     ;
   }
 
+  /** Lambda implementation */
+  public function lambda($event, $context) {
+    return ['test' => true];
+  }
+
   /**
    * Lambda implementations for `response` test.
    *
@@ -35,6 +40,7 @@ class BufferedTest extends RuntimeTest {
         return ['test' => true];
       }
     }];
+    yield [[$this, 'lambda']];
   }
 
   #[Test]

@@ -22,6 +22,13 @@ class StreamingTest extends RuntimeTest {
     ;
   }
 
+  /** Lambda implementation */
+  public function lambda($event, $stream, $context) {
+    $stream->use('text/event-stream');
+    $stream->write("data: One\n\n");
+    $stream->write("data: Two\n\n");
+  }
+
   /**
    * Lambda implementations for `write_event_stream` test.
    *
@@ -40,6 +47,7 @@ class StreamingTest extends RuntimeTest {
         $stream->write("data: Two\n\n");
       }
     }];
+    yield [[$this, 'lambda']];
   }
 
   #[Test]
