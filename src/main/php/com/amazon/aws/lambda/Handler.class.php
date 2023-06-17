@@ -1,5 +1,6 @@
 <?php namespace com\amazon\aws\lambda;
 
+use ReflectionFunction;
 use lang\IllegalArgumentException;
 
 /**
@@ -34,7 +35,7 @@ abstract class Handler {
     if ($target instanceof Lambda) {
       return new Invokeable([$target, 'process'], $api->buffered());
     } else if (is_callable($target)) {
-      $n= (new \ReflectionFunction($target))->getNumberOfParameters();
+      $n= (new ReflectionFunction($target))->getNumberOfParameters();
       return new Invokeable($target, $n < 3 ? $api->buffered() : $api->streaming());
     } else {
       throw new IllegalArgumentException('Expected either a callable or a Lambda instance, have '.typeof($target));
