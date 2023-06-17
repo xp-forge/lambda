@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 4.6.0 / 2023-06-17
+
 * Sticking to the principle *Be liberal in what you accept*, made it
   possible to use pass class filenames to `xp lambda run`.
   (@thekid)
