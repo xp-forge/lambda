@@ -2,6 +2,7 @@
 
 use com\amazon\aws\lambda\{Context, Environment, Handler};
 use lang\{ClassLoader, Throwable, IllegalArgumentException};
+use text\json\Json;
 use util\UUID;
 use util\cmd\Console;
 
@@ -67,7 +68,7 @@ class RunLambda {
       ];
 
       try {
-        $lambda->invoke(json_decode($event, true), new Context($headers, $variables));
+        $lambda->invoke(Json::read($event), new Context($headers, $variables));
       } catch (Throwable $e) {
         Console::$err->writeLine($e);
         $status= 1;
