@@ -3,6 +3,9 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Sticking to the principle *Be liberal in what you accept*, made it
+  possible to use pass class filenames to `xp lambda run`.
+  (@thekid)
 * Fixed issue #24: Syntax error in PHP 7.0...7.3: `unexpected '...'`
   (@thekid)
 

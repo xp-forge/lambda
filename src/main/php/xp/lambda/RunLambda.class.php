@@ -1,7 +1,7 @@
 <?php namespace xp\lambda;
 
 use com\amazon\aws\lambda\{Context, Environment, Handler};
-use lang\{XPClass, Throwable, IllegalArgumentException};
+use lang\{ClassLoader, Throwable, IllegalArgumentException};
 use util\UUID;
 use util\cmd\Console;
 
@@ -25,8 +25,13 @@ class RunLambda {
    * @throws lang.ClassLoadingException
    * @throws lang.IllegalArgumentException
    */
-  public function __construct($handler= 'Handler', array $events= []) {
-    $this->impl= XPClass::forName($handler);
+  public function __construct($handler, array $events= []) {
+    if (is_file($handler)) {
+      $this->impl= ClassLoader::getDefault()->loadUri($handler);
+    } else {
+      $this->impl= ClassLoader::getDefault()->loadClass($handler);
+    }
+
     if (!$this->impl->isSubclassOf(Handler::class)) {
       throw new IllegalArgumentException('Class '.$handler.' is not a lambda handler');
     }
