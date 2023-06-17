@@ -55,7 +55,7 @@ class StreamingTest {
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
-      "Content-Length: 760\r\n".
+      "Content-Length: 882\r\n".
       "\r\n",
       substr($response, 0, strpos($response, "\r\n\r\n") + 4)
     );

@@ -20,7 +20,7 @@ abstract class Handler {
   /** @return com.amazon.aws.lambda.Environment */
   public function environment() { return $this->environment; }
 
-  /** @return com.amazon.aws.lambda.Lambda|callable */
+  /** @return com.amazon.aws.lambda.Lambda|com.amazon.aws.lambda.XXX|callable */
   public abstract function target();
 
   /**
@@ -34,11 +34,13 @@ abstract class Handler {
     $target= $this->target();
     if ($target instanceof Lambda) {
       return new Invokeable([$target, 'process'], $api->buffered());
+    } else if ($target instanceof XXX) {
+      return new Invokeable([$target, 'yyy'], $api->streaming());
     } else if (is_callable($target)) {
       $n= (new ReflectionFunction($target))->getNumberOfParameters();
       return new Invokeable($target, $n < 3 ? $api->buffered() : $api->streaming());
     } else {
-      throw new IllegalArgumentException('Expected either a callable or a Lambda instance, have '.typeof($target));
+      throw new IllegalArgumentException('Expected callable|Lambda|XXX, have '.typeof($target));
     }
   }
 }

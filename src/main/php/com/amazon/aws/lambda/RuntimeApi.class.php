@@ -1,7 +1,9 @@
 <?php namespace com\amazon\aws\lambda;
 
 use Throwable as Any;
-use lang\Throwable;
+use io\Channel;
+use io\streams\InputStream;
+use lang\{Throwable, IllegalStateException, IllegalArgumentException};
 use peer\http\{HttpConnection, HttpRequest, RequestData};
 use text\json\Json;
 
@@ -11,6 +13,7 @@ use text\json\Json;
  * @test  com.amazon.aws.lambda.unittest.RuntimeApiTest
  * @test  com.amazon.aws.lambda.unittest.ExceptionTest
  * @test  com.amazon.aws.lambda.unittest.BufferedTest 
+ * @test  com.amazon.aws.lambda.unittest.StreamedTest
  * @see   https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html
  */
 class RuntimeApi {
@@ -43,7 +46,87 @@ class RuntimeApi {
   }
 
   /** Returns the streaming invoke mode */
-  public function streaming(): InvokeMode { return new Streaming($this); }
+  public function streaming(): InvokeMode {
+    return new class($this) extends InvokeMode implements Stream {
+      private $request= null;
+      private $response= null;
+      private $stream= null;
+
+      private function start() {
+        $this->request->setHeader('Lambda-Runtime-Function-Response-Mode', 'streaming');
+        $this->request->setHeader('Transfer-Encoding', 'chunked');
+        return $this->api->stream($this->request);
+      }
+
+      public function transmit($source, $mimeType= null) {
+        if ($this->response) throw new IllegalStateException('Streaming ended');
+
+        if ($source instanceof InputStream) {
+          $in= $source;
+        } else if ($source instanceof Channel) {
+          $in= $source->in();
+        } else {
+          throw new IllegalArgumentException('Expected either a channel or an input stream, have '.typeof($source));
+        }
+
+        if (null !== $mimeType) {
+          $this->request->setHeader('Content-Type', $mimeType);
+        }
+
+        $this->stream ?? $this->stream= $this->start();
+        try {
+          while ($in->available()) {
+            $this->stream->write($in->read());
+            $this->stream->flush();
+          }
+        } finally {
+          $in->close();
+          $this->end();
+        }
+      }
+
+      public function use($mimeType) {
+        if ($this->response) throw new IllegalStateException('Streaming ended');
+
+        $this->request->setHeader('Content-Type', $mimeType);
+      }
+
+      public function write($bytes) {
+        if ($this->response) throw new IllegalStateException('Streaming ended');
+
+        $this->stream ?? $this->stream= $this->start();
+        $this->stream->write($bytes);
+        $this->stream->flush();
+      }
+
+      public function end() {      
+        if ($this->response) return; // Already ended
+
+        $this->stream ?? $this->stream= $this->start();
+        $this->response= $this->api->finish($this->stream);
+        $this->response->closeStream();
+      }
+
+      public function invoke($lambda, $event, $context) {
+        try {
+          $this->request= $this->api->request("invocation/{$context->awsRequestId}/response");
+          $lambda($event, $context, $this);
+          $this->end();
+          return $this->response;
+        } catch (Throwable $t) {
+
+          // We can only report errors before starting to stream.
+          if (null === $this->stream) {
+            return $this->api->report("invocation/{$context->awsRequestId}/error", $t);
+          }
+
+          // TODO: Use HTTP trailers to report back errors
+          $this->end();
+          throw $t;
+        }
+      }
+    };
+  }
 
   /**
    * Marshals an exception according to the AWS specification.
