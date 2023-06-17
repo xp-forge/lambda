@@ -13,7 +13,6 @@ use util\cmd\Console;
  *
  * @see  https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html
  * @test com.amazon.aws.lambda.unittest.AwsRunnerTest
- * @test com.amazon.aws.lambda.unittest.ExceptionTest
  */
 class AwsRunner {
 
