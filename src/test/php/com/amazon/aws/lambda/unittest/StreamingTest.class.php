@@ -28,18 +28,18 @@ class StreamingTest extends RuntimeTest {
    * @return iterable
    */
   private function implementations() {
-    yield [$this->runtime->invokeable(function($event, $stream, $context) {
+    yield [function($event, $stream, $context) {
       $stream->use('text/event-stream');
       $stream->write("data: One\n\n");
       $stream->write("data: Two\n\n");
-    })];
-    yield [$this->runtime->invokeable(new class() implements Streaming {
+    }];
+    yield [new class() implements Streaming {
       public function handle($event, $stream, $context) {
         $stream->use('text/event-stream');
         $stream->write("data: One\n\n");
         $stream->write("data: Two\n\n");
       }
-    })];
+    }];
   }
 
   #[Test]
@@ -84,7 +84,7 @@ class StreamingTest extends RuntimeTest {
 
   #[Test, Values(from: 'implementations')]
   public function write_event_stream($lambda) {
-    $response= $this->invoke($lambda->callable);
+    $response= $this->invoke($this->runtime->invokeable($lambda)->callable);
 
     Assert::equals(
       "POST /2018-06-01/runtime/invocation/3e1afeb0-cde4-1d0e-c3c0-66b15046bb88/response HTTP/1.1\r\n".
