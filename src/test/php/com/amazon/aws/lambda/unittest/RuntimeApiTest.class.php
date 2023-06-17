@@ -35,7 +35,7 @@ class RuntimeApiTest {
   }
 
   #[Test]
-  public function return_function() {
+  public function return_lambda_function() {
     $invokeable= (new RuntimeApi('localhost:9000'))->invokeable(function($event, $context) {
       return 'Test';
     });
@@ -53,18 +53,23 @@ class RuntimeApiTest {
   }
 
   #[Test]
+  public function return_streaming_function() {
+    $invokeable= (new RuntimeApi('localhost:9000'))->invokeable(function($event, $stream, $context) {
+      $stream->write('Test');
+    });
+
+    $stream= new TestStream();
+    ($invokeable->callable)(null, $stream, new Context($this->headers, []));
+    Assert::equals('Test', $stream->written);
+  }
+
+  #[Test]
   public function return_streaming() {
     $invokeable= (new RuntimeApi('localhost:9000'))->invokeable(new class() implements Streaming {
       public function handle($event, $stream, $context) { $stream->write('Test'); }
     });
-    $stream= new class() implements Stream {
-      public $written= '';
-      public function transmit($source, $mime= null) { /* NOOP */ }
-      public function use($mime) { /** NOOP */ }
-      public function write($bytes) { $this->written.= $bytes; }
-      public function end() { /** NOOP */ }
-    };
 
+    $stream= new TestStream();
     ($invokeable->callable)(null, $stream, new Context($this->headers, []));
     Assert::equals('Test', $stream->written);
   }
