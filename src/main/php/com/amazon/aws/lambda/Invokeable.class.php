@@ -1,7 +1,7 @@
 <?php namespace com\amazon\aws\lambda;
 
 class Invokeable {
-  private $callable, $mode;
+  public $callable, $mode;
 
   /**
    * Create a new invokeable
