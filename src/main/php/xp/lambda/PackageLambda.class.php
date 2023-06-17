@@ -51,7 +51,7 @@ class PackageLambda {
     Console::writeLine('[+] Creating ', $this->target, ' (compression: ', $this->compression, ')');
     $z= ZipFile::create($this->target->asFile()->out());
 
-    $sources= [...$this->sources];
+    $sources= iterator_to_array($this->sources);
     $total= sizeof($sources) + 1;
     foreach ($sources as $i => $source) {
       Console::writef("\e[34m => [%d/%d] ", $i + 1, $total);
