@@ -115,7 +115,7 @@ class RuntimeApi {
 
       public function invoke($lambda, $event, $context) {
         try {
-          $this->request= $this->api->request("invocation/{$context->awsRequestId}/response");
+          $this->request= $this->api->request('POST', "invocation/{$context->awsRequestId}/response");
           $lambda($event, $this, $context);
           $this->end();
           return $this->response;
@@ -182,14 +182,15 @@ class RuntimeApi {
   }
 
   /**
-   * Creates a POST request for a given endpoint
+   * Creates a request for a given endpoint
    * 
+   * @param  string $method
    * @param  string $endpoint
    * @return peer.http.HttpRequest
    */
-  public function request($endpoint) {
+  public function request($method, $endpoint) {
     $request= $this->conn->create(new HttpRequest());
-    $request->setMethod('POST');
+    $request->setMethod($method);
     $request->setTarget("/{$this->version}/runtime/{$endpoint}");
     return $request;
   }
@@ -201,10 +202,7 @@ class RuntimeApi {
    * @return peer.http.HttpResponse
    */
   public function receive($endpoint) {
-    $request= $this->conn->create(new HttpRequest());
-    $request->setMethod('GET');
-    $request->setTarget("/{$this->version}/runtime/{$endpoint}");
-    return $this->conn->send($request);
+    return $this->conn->send($this->request('GET', $endpoint));
   }
 
   /**
@@ -215,9 +213,7 @@ class RuntimeApi {
    * @return peer.http.HttpResponse
    */
   public function send($endpoint, $result) {
-    $request= $this->conn->create(new HttpRequest());
-    $request->setMethod('POST');
-    $request->setTarget("/{$this->version}/runtime/{$endpoint}");
+    $request= $this->request('POST', $endpoint);
     $request->setHeader('Content-Type', 'application/json');
     $request->setParameters(new RequestData(Json::of($result)));
     return $this->conn->send($request);
