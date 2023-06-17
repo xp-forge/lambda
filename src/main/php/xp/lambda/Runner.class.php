@@ -66,21 +66,39 @@ class Runner {
   }
 
   /** Returns the command instance for the given name and arguments */
-  private static function command(string $name, array $args): object {
+  private static function command(string $name, array $args) {
     sscanf($name, "%[^:]:%[^\r]", $command, $version);
     switch ($command) {
-      case 'package': return new PackageLambda(new Path('function.zip'), new Sources(new Path('.'), [...$args, 'vendor']));
-      case 'run': return new RunLambda(...$args);
-      case 'runtime': return new CreateRuntime(self::resolve($version), new Path('runtime-%s.zip'), in_array('-b', $args));
-      case 'test': return new TestLambda(self::resolve($version), new Path('.'), $args);
-      default: return new DisplayError('Unknown command "'.$args[0].'"');
+      case 'package': $args[]= 'vendor'; return new PackageLambda(
+        new Path('function.zip'),
+        new Sources(new Path('.'), $args)
+      );
+
+      case 'run': $handler= array_shift($args); return new RunLambda(
+        $handler,
+        $args
+      );
+
+      case 'runtime': return new CreateRuntime(
+        self::resolve($version),
+        new Path('runtime-%s.zip'),
+        in_array('-b', $args)
+      );
+
+      case 'test': return new TestLambda(
+        self::resolve($version),
+        new Path('.'),
+        $args
+      );
+
+      default: return new DisplayError('Unknown lambda command "'.$name.'"');
     }
   }
 
   /** Entry point */
   public static function main(array $args): int {
     if (empty($args)) {
-      $c= new DisplayError('Missing command, expecting `xp lambda runtime`, `xp lambda test` or `xp lambda package`');
+      $c= new DisplayError('Missing command, expecting `xp lambda [run|package|runtime|test]`');
     } else {
       $c= self::command($args[0], array_slice($args, 1));
     }

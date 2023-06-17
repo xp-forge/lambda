@@ -3,6 +3,9 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Fixed issue #24: Syntax error in PHP 7.0...7.3: `unexpected '...'`
+  (@thekid)
+
 ## 4.5.0 / 2023-06-11
 
 * Check whether configured / passed handler extends the `Handler` base

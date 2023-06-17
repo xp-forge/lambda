@@ -21,11 +21,11 @@ class RunLambda {
    * Creates a new `run` subcommand
    *
    * @param  string $handler
-   * @param  string... $events
+   * @param  string[] $events
    * @throws lang.ClassLoadingException
    * @throws lang.IllegalArgumentException
    */
-  public function __construct($handler= 'Handler', ... $events) {
+  public function __construct($handler= 'Handler', array $events= []) {
     $this->impl= XPClass::forName($handler);
     if (!$this->impl->isSubclassOf(Handler::class)) {
       throw new IllegalArgumentException('Class '.$handler.' is not a lambda handler');
