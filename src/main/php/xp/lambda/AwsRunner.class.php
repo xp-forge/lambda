@@ -51,7 +51,7 @@ class AwsRunner {
 
     // Initialization
     try {
-      $lambda= self::handler($variables, Console::$out)->invokeable($api);
+      $lambda= $api->invokeable(self::handler($variables, Console::$out)->target());
     } catch (Throwable $t) {
       $api->report('init/error', $t);
       return 1;

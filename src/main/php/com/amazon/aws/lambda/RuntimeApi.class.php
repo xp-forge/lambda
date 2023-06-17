@@ -1,6 +1,6 @@
 <?php namespace com\amazon\aws\lambda;
 
-use Throwable as Any;
+use ReflectionFunction, Throwable as Any;
 use io\Channel;
 use io\streams\InputStream;
 use lang\{Throwable, IllegalStateException, IllegalArgumentException};
@@ -33,7 +33,7 @@ class RuntimeApi {
 
   /** Returns the buffered invoke mode */
   public function buffered(): InvokeMode {
-    return new class($this) extends InvokeMode {
+    return new class($this, 'BUFFERED') extends InvokeMode {
       public function invoke($lambda, $event, $context) {
         try {
           $result= $lambda($event, $context);
@@ -47,7 +47,7 @@ class RuntimeApi {
 
   /** Returns the streaming invoke mode */
   public function streaming(): InvokeMode {
-    return new class($this) extends InvokeMode implements Stream {
+    return new class($this, 'RESPONSE_STREAM') extends InvokeMode implements Stream {
       private $request= null;
       private $response= null;
       private $stream= null;
@@ -126,6 +126,26 @@ class RuntimeApi {
         }
       }
     };
+  }
+
+  /**
+   * Returns an invokeable
+   *
+   * @param  callable|com.amazon.aws.lambda.Lambda|com.amazon.aws.lambda.Streaming $target
+   * @return com.amazon.aws.lambda.Invokeable
+   * @throws lang.IllegalArgumentException
+   */
+  public final function invokeable($target) {
+    if ($target instanceof Lambda) {
+      return new Invokeable([$target, 'process'], $this->buffered());
+    } else if ($target instanceof Streaming) {
+      return new Invokeable([$target, 'handle'], $this->streaming());
+    } else if (is_callable($target)) {
+      $n= (new ReflectionFunction($target))->getNumberOfParameters();
+      return new Invokeable($target, $n < 3 ? $this->buffered() : $this->streaming());
+    } else {
+      throw new IllegalArgumentException('Expected callable|Lambda|Streaming, have '.typeof($target));
+    }
   }
 
   /**

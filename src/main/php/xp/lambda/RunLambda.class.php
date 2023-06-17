@@ -42,9 +42,10 @@ class RunLambda {
     $deadlineMs= (time() + 900) * 1000;
     $variables= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region, 'AWS_LOCAL' => true];
     $environment= new Environment(getcwd(), Console::$out, $variables);
+    $runtime= new LocalRuntime(Console::$out);
 
     try {
-      $lambda= $this->impl->newInstance($environment)->invokeable(new LocalRuntime(Console::$out));
+      $lambda= $runtime->invokeable($this->impl->newInstance($environment)->target());
     } catch (Throwable $e) {
       Console::$err->writeLine($e);
       return 127;

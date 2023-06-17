@@ -1,9 +1,9 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\Context;
+use com\amazon\aws\lambda\{Context, Streaming};
 use io\streams\MemoryInputStream;
 use lang\IllegalStateException;
-use test\{Assert, Expect, Test};
+use test\{Assert, Expect, Test, Values};
 
 class StreamingTest extends RuntimeTest {
   use TestContext;
@@ -20,6 +20,26 @@ class StreamingTest extends RuntimeTest {
       ->invoke($lambda, null, new Context($this->headers, $this->environment))
       ->readData()
     ;
+  }
+
+  /**
+   * Lambda implementations for `write_event_stream` test.
+   *
+   * @return iterable
+   */
+  private function implementations() {
+    yield [$this->runtime->invokeable(function($event, $stream, $context) {
+      $stream->use('text/event-stream');
+      $stream->write("data: One\n\n");
+      $stream->write("data: Two\n\n");
+    })];
+    yield [$this->runtime->invokeable(new class() implements Streaming {
+      public function handle($event, $stream, $context) {
+        $stream->use('text/event-stream');
+        $stream->write("data: One\n\n");
+        $stream->write("data: Two\n\n");
+      }
+    })];
   }
 
   #[Test]
@@ -62,13 +82,9 @@ class StreamingTest extends RuntimeTest {
     );
   }
 
-  #[Test]
-  public function write_event_stream() {
-    $response= $this->invoke(function($event, $stream, $context) {
-      $stream->use('text/event-stream');
-      $stream->write("data: One\n\n");
-      $stream->write("data: Two\n\n");
-    });
+  #[Test, Values(from: 'implementations')]
+  public function write_event_stream($lambda) {
+    $response= $this->invoke($lambda->callable);
 
     Assert::equals(
       "POST /2018-06-01/runtime/invocation/3e1afeb0-cde4-1d0e-c3c0-66b15046bb88/response HTTP/1.1\r\n".

@@ -10,7 +10,7 @@ class LocalRuntime extends RuntimeApi {
 
   /** Returns the local buffered mode */
   public function buffered(): InvokeMode {
-    return new class($this) extends InvokeMode {
+    return new class($this, 'BUFFERED') extends InvokeMode {
       public function invoke($lambda, $event, $context) {
         $result= $lambda($event, $context);
         $this->api->out->writeLine($result);
@@ -20,7 +20,7 @@ class LocalRuntime extends RuntimeApi {
 
   /** Returns the local streaming mode */
   public function streaming(): InvokeMode {
-    return new class($this) extends InvokeMode {
+    return new class($this, 'RESPONSE_STREAM') extends InvokeMode {
       public function invoke($lambda, $event, $context) {
         $stream= new class($this->api) implements Stream {
           private $api;
