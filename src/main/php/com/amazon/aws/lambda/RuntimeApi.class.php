@@ -24,6 +24,12 @@ class RuntimeApi {
     $this->conn->setTimeout(900);
   }
 
+  /** Returns the buffered invoke mode */
+  public function buffered(): InvokeMode { return new Buffered($this); }
+
+  /** Returns the streaming invoke mode */
+  public function streaming(): InvokeMode { return new Streaming($this); }
+
   /**
    * Marshals an exception according to the AWS specification.
    *

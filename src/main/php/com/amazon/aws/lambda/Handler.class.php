@@ -32,10 +32,10 @@ abstract class Handler {
   public final function invokeable($api) {
     $target= $this->target();
     if ($target instanceof Lambda) {
-      return new Invokeable([$target, 'process'], new Buffered($api));
+      return new Invokeable([$target, 'process'], $api->buffered());
     } else if (is_callable($target)) {
       $n= (new \ReflectionFunction($target))->getNumberOfParameters();
-      return new Invokeable($target, $n < 3 ? new Buffered($api) : new Streamed($api));
+      return new Invokeable($target, $n < 3 ? $api->buffered() : $api->streaming());
     } else {
       throw new IllegalArgumentException('Expected either a callable or a Lambda instance, have '.typeof($target));
     }

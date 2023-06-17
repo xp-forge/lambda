@@ -1,6 +1,6 @@
 <?php namespace xp\lambda;
 
-use com\amazon\aws\lambda\{Context, Environment, Handler, Streaming, Stream, RuntimeApi};
+use com\amazon\aws\lambda\{Context, Environment, Handler, InvokeMode, Stream, RuntimeApi};
 use lang\{XPClass, Throwable, IllegalArgumentException};
 use util\UUID;
 use util\cmd\Console;
@@ -40,36 +40,14 @@ class RunLambda {
     $region= getenv('AWS_REGION') ?: self::REGION;
     $functionArn= "arn:aws:lambda:{$region}:123456789012:function:{$name}";
     $deadlineMs= (time() + 900) * 1000;
-    $environment= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region, 'AWS_LOCAL' => true];
-    $runtime= new RuntimeApi('localhost');
+    $variables= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region, 'AWS_LOCAL' => true];
+    $environment= new Environment(getcwd(), Console::$out, $variables);
 
     try {
-      $lambda= $this->impl->newInstance(new Environment(getcwd(), Console::$out, $environment))->invokeable($runtime);
+      $lambda= $this->impl->newInstance($environment)->invokeable(new LocalRuntime(Console::$out));
     } catch (Throwable $e) {
       Console::$err->writeLine($e);
       return 127;
-    }
-
-    // Handle streaming vs. buffered lambdas
-    if ($lambda->invokeMode instanceof Streaming) {
-      $invocation= function($callable, $event, $context) {
-        $callable($event, $context, new class() implements Stream {
-          public function transmit($source, $mime= null) {
-            $in= $source instanceof Channel ? $source->in() : $source;
-            while ($in->available()) {
-              Console::$out->write($in->read());
-            }
-          }
-          public function use($mime) { /** NOOP */ }
-          public function write($bytes) { Console::$out->write($bytes); }
-          public function end() { /** NOOP */ }
-        });
-      };
-    } else {
-      $invocation= function($callable, $event, $context) {
-        $result= $callable($event, $context);
-        Console::$out->writeLine($result);
-      };
     }
 
     $status= 0;
@@ -83,7 +61,7 @@ class RunLambda {
       ];
 
       try {
-        $invocation($lambda->callable, json_decode($event, true), new Context($headers, $environment));
+        $lambda->invoke(json_decode($event, true), new Context($headers, $variables));
       } catch (Throwable $e) {
         Console::$err->writeLine($e);
         $status= 1;
