@@ -1,6 +1,6 @@
 <?php namespace xp\lambda;
 
-use Throwable, ReflectionFunction;
+use Throwable;
 use com\amazon\aws\lambda\{Context, Environment, Handler, InvokeMode, RuntimeApi};
 use io\IOException;
 use lang\{XPClass, XPException, IllegalArgumentException, Environment as System};
@@ -47,12 +47,12 @@ class AwsRunner {
    * @return int
    */
   public static function main($args) {
-    $environment= System::variables();
-    $api= new RuntimeApi($environment['AWS_LAMBDA_RUNTIME_API']);
+    $variables= System::variables();
+    $api= new RuntimeApi($variables['AWS_LAMBDA_RUNTIME_API']);
 
     // Initialization
     try {
-      $lambda= self::handler($environment, Console::$out)->invokeable($api);
+      $lambda= self::handler($variables, Console::$out)->invokeable($api);
     } catch (Throwable $t) {
       $api->report('init/error', $t);
       return 1;
@@ -62,7 +62,7 @@ class AwsRunner {
     do {
       try {
         $r= $api->receive('invocation/next');
-        $context= new Context($r->headers(), $environment);
+        $context= new Context($r->headers(), $variables);
         $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
 
         $lambda->invoke($event, $context);
