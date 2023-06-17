@@ -1,8 +1,5 @@
 <?php namespace com\amazon\aws\lambda;
 
-use ReflectionFunction;
-use lang\IllegalArgumentException;
-
 /**
  * Base class for lambda handlers. Subclasses overwrite the `target` method,
  * perform initialization there and finally return the invokeable lambda.
