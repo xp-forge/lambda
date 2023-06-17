@@ -2,10 +2,12 @@
 
 use com\amazon\aws\lambda\{Context, Buffered, RuntimeApi};
 use lang\IllegalStateException;
-use test\{Assert, Test};
+use test\{Assert, Before, Test};
 
 class BufferedTest {
   use TestContext;
+
+  private $runtime;
 
   /**
    * Invokes a lambda and returns the response
@@ -14,13 +16,21 @@ class BufferedTest {
    * @return string
    */
   private function invoke($lambda) {
-    $stream= new Buffered(new RuntimeApi(new TestConnection()));
-    return $stream->invoke($lambda, null, new Context($this->headers, $this->environment))->readData();
+    return $this->runtime
+      ->buffered()
+      ->invoke($lambda, null, new Context($this->headers, $this->environment))
+      ->readData()
+    ;
+  }
+
+  #[Before]
+  public function runtime() {
+    $this->runtime= new RuntimeApi(new TestConnection());
   }
 
   #[Test]
   public function can_create() {
-    new Buffered(new RuntimeApi(new TestConnection()));
+    $this->runtime->buffered();
   }
 
   #[Test]
@@ -52,7 +62,7 @@ class BufferedTest {
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
-      "Content-Length: 712\r\n".
+      "Content-Length: 836\r\n".
       "\r\n",
       substr($response, 0, strpos($response, "\r\n\r\n") + 4)
     );

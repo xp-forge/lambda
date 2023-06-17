@@ -1,5 +1,6 @@
 <?php namespace com\amazon\aws\lambda;
 
+use Throwable as Any;
 use lang\Throwable;
 use peer\http\{HttpConnection, HttpRequest, RequestData};
 use text\json\Json;
@@ -9,6 +10,7 @@ use text\json\Json;
  *
  * @test  com.amazon.aws.lambda.unittest.RuntimeApiTest
  * @test  com.amazon.aws.lambda.unittest.ExceptionTest
+ * @test  com.amazon.aws.lambda.unittest.BufferedTest 
  * @see   https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html
  */
 class RuntimeApi {
@@ -27,7 +29,18 @@ class RuntimeApi {
   }
 
   /** Returns the buffered invoke mode */
-  public function buffered(): InvokeMode { return new Buffered($this); }
+  public function buffered(): InvokeMode {
+    return new class($this) extends InvokeMode {
+      public function invoke($lambda, $event, $context) {
+        try {
+          $result= $lambda($event, $context);
+          return $this->api->send("invocation/{$context->awsRequestId}/response", $result);
+        } catch (Any $e) {
+          return $this->api->report("invocation/{$context->awsRequestId}/error", $e);
+        }
+      }
+    };
+  }
 
   /** Returns the streaming invoke mode */
   public function streaming(): InvokeMode { return new Streaming($this); }
