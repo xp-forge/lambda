@@ -7,12 +7,12 @@ use util\Comparison;
 abstract class InvokeMode implements Value {
   use Comparison;
 
-  protected $api, $name;
+  protected $api, $identifier;
 
   /** Creates a new invoke mode instance */
-  public function __construct(RuntimeApi $api, $name) {
+  public function __construct(RuntimeApi $api, $identifier) {
     $this->api= $api;
-    $this->name= $name;
+    $this->identifier= $identifier;
   }
 
   /**
@@ -27,6 +27,6 @@ abstract class InvokeMode implements Value {
 
   /** @return string */
   public function toString() {
-    return strtr(self::class, '\\', '.').'<'.$this->name.'>';
+    return strtr(self::class, '\\', '.').'<'.$this->identifier.'>';
   }
 }
