@@ -22,14 +22,20 @@ abstract class Handler {
   /** @return com.amazon.aws.lambda.Lambda|callable */
   public abstract function target();
 
-  /** @return com.amazon.aws.lambda.Invokeable */
-  public final function lambda() {
+  /**
+   * Returns an invokeable
+   *
+   * @param  com.amazon.aws.lambda.RuntimeApi
+   * @return com.amazon.aws.lambda.Invokeable
+   * @throws lang.IllegalArgumentException
+   */
+  public final function invokeable($api) {
     $target= $this->target();
     if ($target instanceof Lambda) {
-      return new Invokeable([$target, 'process'], Buffered::class);
+      return new Invokeable([$target, 'process'], new Buffered($api));
     } else if (is_callable($target)) {
       $n= (new \ReflectionFunction($target))->getNumberOfParameters();
-      return new Invokeable($target, $n < 3 ? Buffered::class : Streamed::class);
+      return new Invokeable($target, $n < 3 ? new Buffered($api) : new Streamed($api));
     } else {
       throw new IllegalArgumentException('Expected either a callable or a Lambda instance, have '.typeof($target));
     }

@@ -1,6 +1,6 @@
 <?php namespace xp\lambda;
 
-use com\amazon\aws\lambda\{Context, Environment, Handler, Streaming, Stream};
+use com\amazon\aws\lambda\{Context, Environment, Handler, Streaming, Stream, RuntimeApi};
 use lang\{XPClass, Throwable, IllegalArgumentException};
 use util\UUID;
 use util\cmd\Console;
@@ -41,16 +41,17 @@ class RunLambda {
     $functionArn= "arn:aws:lambda:{$region}:123456789012:function:{$name}";
     $deadlineMs= (time() + 900) * 1000;
     $environment= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region, 'AWS_LOCAL' => true];
+    $runtime= new RuntimeApi('localhost');
 
     try {
-      $lambda= $this->impl->newInstance(new Environment(getcwd(), Console::$out, $environment))->lambda();
+      $lambda= $this->impl->newInstance(new Environment(getcwd(), Console::$out, $environment))->invokeable($runtime);
     } catch (Throwable $e) {
       Console::$err->writeLine($e);
       return 127;
     }
 
     // Handle streaming vs. buffered lambdas
-    if ($lambda->invokeMode === Streaming::class) {
+    if ($lambda->invokeMode instanceof Streaming) {
       $invocation= function($callable, $event, $context) {
         $callable($event, $context, new class() implements Stream {
           public function transmit($source, $mime= null) {

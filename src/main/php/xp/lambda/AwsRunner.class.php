@@ -52,21 +52,20 @@ class AwsRunner {
 
     // Initialization
     try {
-      $lambda= self::handler($environment, Console::$out)->lambda();
+      $lambda= self::handler($environment, Console::$out)->invokeable($api);
     } catch (Throwable $t) {
       $api->report('init/error', $t);
       return 1;
     }
 
     // Process events using the lambda runtime interface
-    $mode= $lambda->mode($api);
     do {
       try {
         $r= $api->receive('invocation/next');
         $context= new Context($r->headers(), $environment);
         $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
 
-        $mode->invoke($lambda->callable, $event, $context);
+        $lambda->invoke($event, $context);
       } catch (Throwable $t) {
         Console::$err->writeLine($t);
         break;

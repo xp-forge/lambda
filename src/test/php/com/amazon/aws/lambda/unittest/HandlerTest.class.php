@@ -1,8 +1,8 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
-use com\amazon\aws\lambda\{Context, Environment, Handler, Lambda};
+use com\amazon\aws\lambda\{Context, Environment, Handler, Lambda, RuntimeApi};
 use lang\IllegalArgumentException;
-use test\{Assert, Expect, Test};
+use test\{Assert, Before, Expect, Test};
 
 class HandlerTest {
   private $headers= [
@@ -10,6 +10,11 @@ class HandlerTest {
     'Lambda-Runtime-Invoked-Function-Arn' => ['arn:aws:lambda:us-east-1:1185465369:function:test'],
     'Lambda-Runtime-Trace-Id'             => ['Root=1-dc99d00f-c079a84d433534434534ef0d;Parent=91ed514f1e5c03b2;Sampled=1'],
   ];
+
+  #[Before]
+  public function runtime() {
+    $this->runtime= new RuntimeApi(new TestConnection());
+  }
 
   #[Test]
   public function can_create() {
@@ -34,7 +39,7 @@ class HandlerTest {
         return function($event, $context) { return 'Test'; };
       }
     };
-    Assert::equals('Test', ($fixture->lambda()->callable)(null, new Context($this->headers, [])));
+    Assert::equals('Test', ($fixture->invokeable($this->runtime)->callable)(null, new Context($this->headers, [])));
   }
 
   #[Test]
@@ -46,7 +51,7 @@ class HandlerTest {
         };
       }
     };
-    Assert::equals('Test', ($fixture->lambda()->callable)(null, new Context($this->headers, [])));
+    Assert::equals('Test', ($fixture->invokeable($this->runtime)->callable)(null, new Context($this->headers, [])));
   }
 
   #[Test, Expect(IllegalArgumentException::class)]
@@ -56,6 +61,6 @@ class HandlerTest {
         return null;
       }
     };
-    $fixture->lambda();
+    $fixture->invokeable($this->runtime);
   }
 }
