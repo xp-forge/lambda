@@ -126,6 +126,18 @@ class StreamingTest extends RuntimeTest {
     );
   }
 
+  #[Test]
+  public function invoke_handler_multiple_times() {
+    $lambda= function($event, $stream, $context) { $stream->write('Test'); };
+    $streaming= $this->runtime->streaming();
+
+    foreach (['3e1afeb0-cde4-1d0e-c3c0-66b15046bb88', '46c40f55-2a88-4b69-857c-26460e56b2e1'] as $id) {
+      $request= ['Lambda-Runtime-Aws-Request-Id' => [$id]];
+      $response= $streaming->invoke($lambda, null, new Context($request + $this->headers, $this->environment));
+      Assert::matches("/^POST .+\/{$id}\/response/", $response->readData());
+    }
+  }
+
   #[Test, Expect(IllegalStateException::class)]
   public function writing_after_end() {
     $this->invoke(function($event, $stream, $context) {

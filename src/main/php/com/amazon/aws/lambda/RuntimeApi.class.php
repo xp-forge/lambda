@@ -114,8 +114,10 @@ class RuntimeApi {
       }
 
       public function invoke($lambda, $event, $context) {
+        $this->request= $this->api->request('POST', "invocation/{$context->awsRequestId}/response");
+        $this->response= $this->stream= null;
+
         try {
-          $this->request= $this->api->request('POST', "invocation/{$context->awsRequestId}/response");
           $lambda($event, $this, $context);
           $this->end();
           return $this->response;
