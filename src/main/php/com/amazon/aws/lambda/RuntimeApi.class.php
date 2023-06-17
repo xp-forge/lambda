@@ -19,16 +19,22 @@ use text\json\Json;
 class RuntimeApi {
   public $conn, $version;
 
+  /**
+   * Creates a new runtime API instance.
+   *
+   * Uses a 15 minute timeout, which is the maximum lambda runtime, see
+   * https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
+   *
+   * @param  string|peer.HttpConnection $endpoint
+   * @param  string $version
+   */
   public function __construct($endpoint, $version= '2018-06-01') {
     $this->conn= $endpoint instanceof HttpConnection
       ? $endpoint
       : new HttpConnection("http://{$endpoint}")
     ;
-    $this->version= $version;
-
-    // Use a 15 minute timeout, this is the maximum lambda runtime, see
-    // https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
     $this->conn->setTimeout(900);
+    $this->version= $version;
   }
 
   /** Returns the buffered invoke mode */
