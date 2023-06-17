@@ -11,7 +11,7 @@ class StreamingTest extends RuntimeTest {
   /**
    * Invokes a lambda and returns the response
    * 
-   * @param  function(var, com.amazon.aws.lambda.Context, com.amazon.aws.lambda.Streaming): void
+   * @param  function(var, com.amazon.aws.lambda.Streaming, com.amazon.aws.lambda.Context): void
    * @return string
    */
   private function invoke($lambda) {
@@ -29,7 +29,7 @@ class StreamingTest extends RuntimeTest {
 
   #[Test]
   public function noop() {
-    $response= $this->invoke(function($event, $context, $stream) {
+    $response= $this->invoke(function($event, $stream, $context) {
       // NOOP
     });
 
@@ -46,7 +46,7 @@ class StreamingTest extends RuntimeTest {
 
   #[Test]
   public function reports_exceptions_before_streaming_via_error() {
-    $response= $this->invoke(function($event, $context, $stream) {
+    $response= $this->invoke(function($event, $stream, $context) {
       throw new IllegalStateException('Test');
     });
 
@@ -64,7 +64,7 @@ class StreamingTest extends RuntimeTest {
 
   #[Test]
   public function write_event_stream() {
-    $response= $this->invoke(function($event, $context, $stream) {
+    $response= $this->invoke(function($event, $stream, $context) {
       $stream->use('text/event-stream');
       $stream->write("data: One\n\n");
       $stream->write("data: Two\n\n");
@@ -85,7 +85,7 @@ class StreamingTest extends RuntimeTest {
 
   #[Test]
   public function transmit() {
-    $response= $this->invoke(function($event, $context, $stream) {
+    $response= $this->invoke(function($event, $stream, $context) {
       $stream->transmit(new MemoryInputStream('{"test":true}'), 'application/json');
     });
 
@@ -104,7 +104,7 @@ class StreamingTest extends RuntimeTest {
 
   #[Test, Expect(IllegalStateException::class)]
   public function writing_after_end() {
-    $this->invoke(function($event, $context, $stream) {
+    $this->invoke(function($event, $stream, $context) {
       $stream->end();
       $stream->write('Test');
     });
@@ -112,7 +112,7 @@ class StreamingTest extends RuntimeTest {
 
   #[Test, Expect(IllegalStateException::class)]
   public function changing_mime_type_after_end() {
-    $this->invoke(function($event, $context, $stream) {
+    $this->invoke(function($event, $stream, $context) {
       $stream->end();
       $stream->use('text/plain');
     });

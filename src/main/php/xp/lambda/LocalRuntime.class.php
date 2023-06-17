@@ -22,7 +22,7 @@ class LocalRuntime extends RuntimeApi {
   public function streaming(): InvokeMode {
     return new class($this) extends InvokeMode {
       public function invoke($lambda, $event, $context) {
-        $lambda($event, $context, new class($this->api) implements Stream {
+        $stream= new class($this->api) implements Stream {
           private $api;
           public function __construct($api) { $this->api= $api; }
           public function transmit($source, $mime= null) {
@@ -34,7 +34,8 @@ class LocalRuntime extends RuntimeApi {
           public function use($mime) { /** NOOP */ }
           public function write($bytes) { $this->api->out->write($bytes); }
           public function end() { /** NOOP */ }
-        });
+        };
+        $lambda($event, $stream, $context);
       }
     };
   }

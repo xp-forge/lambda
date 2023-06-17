@@ -110,7 +110,7 @@ class RuntimeApi {
       public function invoke($lambda, $event, $context) {
         try {
           $this->request= $this->api->request("invocation/{$context->awsRequestId}/response");
-          $lambda($event, $context, $this);
+          $lambda($event, $this, $context);
           $this->end();
           return $this->response;
         } catch (Throwable $t) {
