@@ -105,6 +105,14 @@ class RuntimeApi {
         $this->stream->flush();
       }
 
+      public function flush() {
+        // All writes flush, NOOP
+      }
+
+      public function close() {
+        $this->end();
+      }
+
       public function end() {      
         if ($this->response) return; // Already ended
 

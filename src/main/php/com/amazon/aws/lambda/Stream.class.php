@@ -1,6 +1,8 @@
 <?php namespace com\amazon\aws\lambda;
 
-interface Stream {
+use io\streams\OutputStream;
+
+interface Stream extends OutputStream {
 
   /**
    * Transmits a given source to the output asynchronously.

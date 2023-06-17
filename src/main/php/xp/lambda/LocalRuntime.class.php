@@ -35,6 +35,8 @@ class LocalRuntime extends RuntimeApi {
           public function use($mime) { /** NOOP */ }
           public function write($bytes) { $this->api->out->write($bytes); }
           public function end() { /** NOOP */ }
+          public function flush() { /** NOOP */ }
+          public function close() { /** NOOP */ }
         };
         $lambda($event, $stream, $context);
       }

@@ -1,7 +1,7 @@
 <?php namespace com\amazon\aws\lambda\unittest;
 
 use com\amazon\aws\lambda\{Context, Streaming};
-use io\streams\MemoryInputStream;
+use io\streams\{MemoryInputStream, StreamTransfer};
 use lang\IllegalStateException;
 use test\{Assert, Expect, Test, Values};
 
@@ -111,6 +111,26 @@ class StreamingTest extends RuntimeTest {
   public function transmit() {
     $response= $this->invoke(function($event, $stream, $context) {
       $stream->transmit(new MemoryInputStream('{"test":true}'), 'application/json');
+    });
+
+    Assert::equals(
+      "POST /2018-06-01/runtime/invocation/3e1afeb0-cde4-1d0e-c3c0-66b15046bb88/response HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json\r\n".
+      "Lambda-Runtime-Function-Response-Mode: streaming\r\n".
+      "Transfer-Encoding: chunked\r\n".
+      "\r\n".
+      "{\"test\":true}",
+      $response
+    );
+  }
+
+  #[Test]
+  public function can_be_used_as_output_stream() {
+    $response= $this->invoke(function($event, $stream, $context) {
+      $stream->use('application/json');
+      (new StreamTransfer(new MemoryInputStream('{"test":true}'), $stream))->transferAll();
     });
 
     Assert::equals(

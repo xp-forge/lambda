@@ -11,5 +11,9 @@ class TestStream implements Stream {
 
   public function write($bytes) { $this->written.= $bytes; }
 
+  public function flush() { /** NOOP */ }
+
+  public function close() { /** NOOP */ }
+
   public function end() { /** NOOP */ }
 }
