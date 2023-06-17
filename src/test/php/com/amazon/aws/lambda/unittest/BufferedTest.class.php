@@ -50,14 +50,15 @@ class BufferedTest extends RuntimeTest {
       throw new IllegalStateException('Test');
     });
 
+    $headersAt= strpos($response, "\r\n\r\n") + 4;
     Assert::equals(
       "POST /2018-06-01/runtime/invocation/3e1afeb0-cde4-1d0e-c3c0-66b15046bb88/error HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
       "Content-Type: application/json\r\n".
-      "Content-Length: 836\r\n".
+      "Content-Length: ".(strlen($response) - $headersAt)."\r\n".
       "\r\n",
-      substr($response, 0, strpos($response, "\r\n\r\n") + 4)
+      substr($response, 0, $headersAt)
     );
   }
 }
