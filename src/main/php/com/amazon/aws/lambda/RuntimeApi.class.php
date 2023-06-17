@@ -7,10 +7,11 @@ use text\json\Json;
 /**
  * Runtime API
  *
+ * @test  com.amazon.aws.lambda.unittest.RuntimeApiTest
  * @see   https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html
  */
 class RuntimeApi {
-  private $conn, $version;
+  public $conn, $version;
 
   public function __construct($endpoint, $version= '2018-06-01') {
     $this->conn= $endpoint instanceof HttpConnection
