@@ -7,7 +7,7 @@ AWS Lambda change log
 
 * Merged PR #23: Implement streaming lambda responses, as announced by
   AWS in April 2023. Response stream payloads have a soft limit of 20 MB
-  as compared to the 6 MB limit for buffered responses.
+  as compared to the 6 MB limit for buffered responses. See also #22.
   (@thekid)
 
 ## 4.6.0 / 2023-06-17
