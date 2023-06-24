@@ -351,4 +351,5 @@ See also
 * [AWS Lambda Custom Runtime for PHP: A Practical Example](https://aws.amazon.com/de/blogs/apn/aws-lambda-custom-runtime-for-php-a-practical-example/)
 * [AWS SDK for PHP](https://docs.aws.amazon.com/sdk-for-php/index.html)
 * [The Serverless LAMP stack - Community Resources](https://github.com/aws-samples/php-examples-for-aws-lambda/blob/master/serverless-php-resources.md)
-* [https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html](https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html)
+* [Configuring a Lambda function to stream responses](https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html)
+* [Implementing response streaming in a custom runtime](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html#runtimes-custom-response-streaming)
