@@ -5,6 +5,10 @@ AWS Lambda change log
 
 ## 5.0.0 / 2023-06-24
 
+This major release add support for response streaming, currently only
+implemented by the NodeJS runtimes on AWS. For implementation details,
+see https://github.com/xp-forge/lambda#response-streaming
+
 * Merged PR #23: Implement streaming lambda responses, as announced by
   AWS in April 2023. Response stream payloads have a soft limit of 20 MB
   as compared to the 6 MB limit for buffered responses. See also #22.
