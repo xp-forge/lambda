@@ -345,8 +345,10 @@ public interface com.amazon.aws.lambda.Streaming {
 See also
 --------
 * [What is AWS Lambda?](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
+* [AWS Lambda Webservices for the XP Framework](https://github.com/xp-forge/lambda-ws)
+* [AWS Core for the XP Framework](https://github.com/xp-forge/aws)
 * [Lambda runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html)
 * [AWS Lambda Custom Runtime for PHP: A Practical Example](https://aws.amazon.com/de/blogs/apn/aws-lambda-custom-runtime-for-php-a-practical-example/)
 * [AWS SDK for PHP](https://docs.aws.amazon.com/sdk-for-php/index.html)
 * [The Serverless LAMP stack - Community Resources](https://github.com/aws-samples/php-examples-for-aws-lambda/blob/master/serverless-php-resources.md)
-* [AWS Lambda Webservices for the XP Framework](https://github.com/xp-forge/lambda-ws)
+* [https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html](https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html)
