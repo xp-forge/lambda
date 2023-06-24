@@ -321,11 +321,20 @@ public interface com.amazon.aws.lambda.Lambda {
 }
 
 public interface com.amazon.aws.lambda.Streaming {
-  public abstract function handle(
+  public function handle(
     var $event,
     com.amazon.aws.lambda.Stream $stream,
     com.amazon.aws.lambda.Context $context
   ): void
+}
+
+public interface com.amazon.aws.lambda.Stream extends io.streams.OutputStream, lang.Closeable {
+  public function transmit(io.Channel|io.streams.InputStream $source, string $mimeType): void
+  public function use(string $mimeType): void
+  public function write(string $bytes): void
+  public function end(): void
+  public function flush(): void
+  public function close(): var
 }
 ```
 
