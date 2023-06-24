@@ -109,6 +109,19 @@ Invoking this lambda will yield the following:
 
 ![Streaming in Terminal](https://github.com/xp-forge/lambda/assets/696742/41785beb-3903-45a0-a2ec-2c7c27c2c7b4)
 
+The *Stream* interface is defined as follows:
+
+```php
+public interface com.amazon.aws.lambda.Stream extends io.streams.OutputStream, lang.Closeable {
+  public function transmit(io.Channel|io.streams.InputStream $source, string $mimeType): void
+  public function use(string $mimeType): void
+  public function write(string $bytes): void
+  public function end(): void
+  public function flush(): void
+  public function close(): var
+}
+```
+
 Development
 -----------
 To run your lambda locally, use the following:
@@ -326,15 +339,6 @@ public interface com.amazon.aws.lambda.Streaming {
     com.amazon.aws.lambda.Stream $stream,
     com.amazon.aws.lambda.Context $context
   ): void
-}
-
-public interface com.amazon.aws.lambda.Stream extends io.streams.OutputStream, lang.Closeable {
-  public function transmit(io.Channel|io.streams.InputStream $source, string $mimeType): void
-  public function use(string $mimeType): void
-  public function write(string $bytes): void
-  public function end(): void
-  public function flush(): void
-  public function close(): var
 }
 ```
 
