@@ -34,19 +34,4 @@ class AwsRunnerTest {
   public function without_handler() {
     AwsRunner::handler([], $this->writer);
   }
-
-  #[Test]
-  public function endpoint_url_determined_from_environment() {
-    $endpoint= AwsRunner::endpoint(['AWS_LAMBDA_RUNTIME_API' => 'localhost:9000'], 'invocation/next');
-    Assert::equals(
-      'http://localhost:9000/2018-06-01/runtime/invocation/next',
-      $endpoint->getUrl()->getCanonicalURL()
-    );
-  }
-
-  #[Test]
-  public function endpoint_timeout_is_15_minutes() {
-    $endpoint= AwsRunner::endpoint(['AWS_LAMBDA_RUNTIME_API' => 'localhost:9000'], 'invocation/next');
-    Assert::equals(15 * 60, $endpoint->getTimeout());
-  }
 }

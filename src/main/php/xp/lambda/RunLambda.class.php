@@ -2,6 +2,7 @@
 
 use com\amazon\aws\lambda\{Context, Environment, Handler};
 use lang\{ClassLoader, Throwable, IllegalArgumentException};
+use text\json\Json;
 use util\UUID;
 use util\cmd\Console;
 
@@ -45,10 +46,12 @@ class RunLambda {
     $region= getenv('AWS_REGION') ?: self::REGION;
     $functionArn= "arn:aws:lambda:{$region}:123456789012:function:{$name}";
     $deadlineMs= (time() + 900) * 1000;
-    $environment= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region, 'AWS_LOCAL' => true];
+    $variables= $_ENV + ['AWS_LAMBDA_FUNCTION_NAME' => $name, 'AWS_REGION' => $region, 'AWS_LOCAL' => true];
+    $environment= new Environment(getcwd(), Console::$out, $variables);
+    $runtime= new LocalRuntime(Console::$out);
 
     try {
-      $lambda= $this->impl->newInstance(new Environment(getcwd(), Console::$out, $environment))->lambda();
+      $lambda= $runtime->invokeable($this->impl->newInstance($environment)->target());
     } catch (Throwable $e) {
       Console::$err->writeLine($e);
       return 127;
@@ -65,8 +68,7 @@ class RunLambda {
       ];
 
       try {
-        $result= $lambda(json_decode($event, true), new Context($headers, $environment));
-        Console::$out->writeLine($result);
+        $lambda->invoke(Json::read($event), new Context($headers, $variables));
       } catch (Throwable $e) {
         Console::$err->writeLine($e);
         $status= 1;

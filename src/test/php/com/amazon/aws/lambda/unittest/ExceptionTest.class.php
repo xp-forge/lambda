@@ -2,15 +2,14 @@
 
 use lang\{IllegalArgumentException, IllegalStateException};
 use test\{Assert, Test};
-use xp\lambda\AwsRunner;
 
-class ExceptionTest {
+class ExceptionTest extends RuntimeTest {
 
   #[Test]
   public function includes_errorMessage() {
     Assert::equals(
       'Test',
-      AwsRunner::error(new IllegalArgumentException('Test'))['errorMessage']
+      $this->runtime->error(new IllegalArgumentException('Test'))['errorMessage']
     );
   }
 
@@ -18,7 +17,7 @@ class ExceptionTest {
   public function includes_errorType() {
     Assert::equals(
       'lang.IllegalArgumentException',
-      AwsRunner::error(new IllegalArgumentException('Test'))['errorType']
+      $this->runtime->error(new IllegalArgumentException('Test'))['errorType']
     );
   }
 
@@ -26,7 +25,7 @@ class ExceptionTest {
   public function includes_stackTrace() {
     Assert::true(in_array(
       'Exception lang.IllegalArgumentException (Test)',
-      AwsRunner::error(new IllegalArgumentException('Test'))['stackTrace']
+      $this->runtime->error(new IllegalArgumentException('Test'))['stackTrace']
     ));
   }
 
@@ -34,7 +33,7 @@ class ExceptionTest {
   public function includes_cause() {
     Assert::true(in_array(
       'Exception lang.IllegalStateException (Cause)',
-      AwsRunner::error(new IllegalArgumentException('Test', new IllegalStateException('Cause')))['stackTrace']
+      $this->runtime->error(new IllegalArgumentException('Test', new IllegalStateException('Cause')))['stackTrace']
     ));
   }
 }

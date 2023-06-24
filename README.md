@@ -19,7 +19,7 @@ use com\amazon\aws\lambda\Handler;
 
 class Greet extends Handler {
 
-  /** @return com.amazon.aws.lambda.Lambda|callable */
+  /** @return callable|com.amazon.aws.lambda.Lambda|com.amazon.aws.lambda.Streaming */
   public function target() {
     return fn($event, $context) => sprintf(
       'Hello %s from PHP %s via %s @ %s',
@@ -43,7 +43,7 @@ use com\amazon\aws\lambda\Handler;
 
 class Greet extends Handler {
 
-  /** @return com.amazon.aws.lambda.Lambda|callable */
+  /** @return callable|com.amazon.aws.lambda.Lambda|com.amazon.aws.lambda.Streaming */
   public function target() {
     $default= $this->environment->properties('task')->readString('greet', 'default');
 
@@ -60,7 +60,6 @@ class Greet extends Handler {
 
 The lambda's environment accessible via *$this->environment* is an Environment instance, see [below](https://github.com/xp-forge/lambda#environment).
 
-
 ### Logging
 
 To write output to the lambda's log stream, use *trace()*:
@@ -70,7 +69,7 @@ use com\amazon\aws\lambda\Handler;
 
 class Greet extends Handler {
 
-  /** @return com.amazon.aws.lambda.Lambda|callable */
+  /** @return callable|com.amazon.aws.lambda.Lambda|com.amazon.aws.lambda.Streaming */
   public function target() {
     return function($event, $context) {
       $this->environment->trace('Invoked with ', $event);
@@ -82,6 +81,33 @@ class Greet extends Handler {
 ```
 
 Any non-string arguments passed will be converted to string using `util.Objects::stringOf()`. To integrate with [XP logging](https://github.com/xp-framework/logging), pass the environment's writer to the console appender, e.g. by using `$cat= Logging::all()->toConsole($this->environment->writer)`.
+
+### Response streaming
+
+This library supports AWS Lambda response streaming as [announced by AWS in April 2023](https://aws.amazon.com/de/blogs/compute/introducing-aws-lambda-response-streaming/). To use the stream, return a `function(var, Stream, Context)` from the handler's *target()* method instead of a `function(var, Context)`:
+
+```php
+use com\amazon\aws\lambda\{Context, Handler, Stream};
+
+class Streamed extends Handler {
+
+  public function target(): callable {
+    return function($event, Stream $stream, Context $context) {
+      $stream->use('text/plain');
+      $stream->write("[".date('r')."] Hello world...\n");
+
+      sleep(1);
+
+      $stream->write("[".date('r')."] ...from Lambda\n");
+      $stream->end();
+    };
+  }
+}
+```
+
+Invoking this lambda will yield the following:
+
+![Streaming in Terminal](https://github.com/xp-forge/lambda/assets/696742/41785beb-3903-45a0-a2ec-2c7c27c2c7b4)
 
 Development
 -----------
@@ -206,9 +232,9 @@ In order to programmatically use other AWS services use the *ServiceEndpoint* cl
 use com\amazon\aws\{Credentials, ServiceEndpoint};
 use com\amazon\aws\lambda\Handler;
 
-class Streaming extends Handler {
+class WebSockets extends Handler {
 
-  /** @return com.amazon.aws.lambda.Lambda|callable */
+  /** @return callable|com.amazon.aws.lambda.Lambda|com.amazon.aws.lambda.Streaming */
   public function target() {
     return function($event, $context) {
 
@@ -228,7 +254,7 @@ class Streaming extends Handler {
 To test this locally, pass the necessary environment variables via *-e* on the command line:
 
 ```bash
-$ xp lambda test -e AWS_ACCESS_KEY_ID=... -e AWS_SECRET_ACCESS_KEY=... Streaming '{"requestContext":...}'
+$ xp lambda test -e AWS_ACCESS_KEY_ID=... -e AWS_SECRET_ACCESS_KEY=... WebSockets '{"requestContext":...}'
 # ...
 ```
 

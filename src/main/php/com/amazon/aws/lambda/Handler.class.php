@@ -1,7 +1,5 @@
 <?php namespace com\amazon\aws\lambda;
 
-use lang\IllegalArgumentException;
-
 /**
  * Base class for lambda handlers. Subclasses overwrite the `target` method,
  * perform initialization there and finally return the invokeable lambda.
@@ -19,18 +17,6 @@ abstract class Handler {
   /** @return com.amazon.aws.lambda.Environment */
   public function environment() { return $this->environment; }
 
-  /** @return com.amazon.aws.lambda.Lambda|callable */
+  /** @return com.amazon.aws.lambda.Lambda|com.amazon.aws.lambda.Streaming|callable */
   public abstract function target();
-
-  /** @return callable */
-  public final function lambda() {
-    $target= $this->target();
-    if ($target instanceof Lambda) {
-      return [$target, 'process'];
-    } else if (is_callable($target)) {
-      return $target;
-    } else {
-      throw new IllegalArgumentException('Expected either a callable or a Lambda instance, have '.typeof($target));
-    }
-  }
 }
