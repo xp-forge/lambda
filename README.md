@@ -311,13 +311,21 @@ public class com.amazon.aws.lambda.Environment {
 }
 ```
 
-Lambda
-------
-Instead of functions, a handler's *target()* method may also return instances implementing the *Lambda* interface:
+Interfaces
+----------
+Instead of functions, a handler's *target()* method may also return instances implementing the *Lambda* or *Streaming* interfaces:
 
 ```php
 public interface com.amazon.aws.lambda.Lambda {
   public function process(var $event, com.amazon.aws.lambda.Context $context): var
+}
+
+public interface com.amazon.aws.lambda.Streaming {
+  public abstract function handle(
+    var $event,
+    com.amazon.aws.lambda.Stream $stream,
+    com.amazon.aws.lambda.Context $context
+  ): void
 }
 ```
 
