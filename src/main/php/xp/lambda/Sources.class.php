@@ -16,7 +16,7 @@ class Sources implements IteratorAggregate {
   public function getIterator(): Traversable {
     $seen= [];
     foreach ($this->sources as $source) {
-      $path= ($source instanceof Path ? $source : new Path($source))->asRealpath();
+      $path= ($source instanceof Path ? $source : new Path($source))->asRealpath($this->base);
 
       $key= $path->hashCode(); 
       if (isset($seen[$key])) continue;

@@ -5,6 +5,7 @@ use io\archive\zip\{ZipFile, ZipArchiveWriter, ZipDirEntry, ZipFileEntry, Compre
 use io\streams\StreamTransfer;
 use util\cmd\Console;
 
+/** @test com.amazon.aws.lambda.unittest.PackagingTest */
 class PackageLambda {
   const COMPRESSION_THRESHOLD= 24;
 
