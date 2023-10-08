@@ -8,6 +8,7 @@ use util\cmd\Console;
 class PackageLambda {
   const COMPRESSION_THRESHOLD= 24;
 
+  // See https://www.php.net/manual/en/function.fileperms.php
   const IS_LINK= 0120000;
   const IS_FILE= 0100000;
   const IS_FOLDER= 0040000;
