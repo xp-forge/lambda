@@ -22,8 +22,8 @@ class PackagingTest {
     $this->tempDir->unlink();
   }
 
-  /** Creates package from given source definitions */
-  private function package(array $definitions): ZipIterator {
+  /** Creates files and directory from given definitions */
+  private function create(array $definitions): Path {
 
     // Create sources from definitions
     foreach ($definitions as $name => $definition) {
@@ -38,12 +38,18 @@ class PackagingTest {
       }
     }
 
+    return new Path($this->tempDir);
+  }
+
+  /** Creates package from given sources */
+  private function package(Sources $sources): ZipIterator {
+
     // Run packaging command
     $target= new Path($this->tempDir, 'test.zip');
     $out= Console::$out->stream();
     Console::$out->redirect(new MemoryOutputStream());
     try {
-      $cmd= new PackageLambda($target, new Sources(new Path($this->tempDir), array_keys($definitions)));
+      $cmd= new PackageLambda($target, $sources);
       $cmd->run();
     } finally {
       Console::$out->redirect($out);
@@ -54,7 +60,7 @@ class PackagingTest {
 
   #[Test]
   public function single_file() {
-    $zip= $this->package(['file.txt' => ['file', 'Test']]);
+    $zip= $this->package(new Sources($this->create(['file.txt' => ['file', 'Test']]), ['file.txt']));
 
     $file= $zip->next();
     Assert::equals('file.txt', $file->getName());
@@ -63,7 +69,7 @@ class PackagingTest {
 
   #[Test]
   public function single_directory() {
-    $zip= $this->package(['src' => ['dir', 0755]]);
+    $zip= $this->package(new Sources($this->create(['src' => ['dir', 0755]]), ['src']));
 
     $dir= $zip->next();
     Assert::equals('src'.DIRECTORY_SEPARATOR, $dir->getName());
@@ -72,10 +78,11 @@ class PackagingTest {
 
   #[Test]
   public function file_inside_directory() {
-    $zip= $this->package([
+    $path= $this->create([
       'src'          => ['dir', 0755],
       'src/file.txt' => ['file', 'Test']
     ]);
+    $zip= $this->package(new Sources($path, ['src']));
 
     $dir= $zip->next();
     Assert::equals('src'.DIRECTORY_SEPARATOR, $dir->getName());
