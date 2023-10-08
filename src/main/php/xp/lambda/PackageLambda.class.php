@@ -68,7 +68,17 @@ class PackageLambda {
     $z= ZipFile::create($this->target->asFile()->out());
 
     $sources= iterator_to_array($this->sources);
-    $total= sizeof($sources) + 1;
+    $total= sizeof($sources);
+
+    // Add class path file to root if existant
+    $p= new Path($this->sources->base, 'class.pth');
+    if ($p->exists()) {
+      $file= $z->add(new ZipFileEntry('class.pth'));
+      $file->out()->write(preg_replace($this->exclude.'m', '?$1', file_get_contents($p)));
+      Console::writeLinef("\e[34m => [1/%d] class.pth\e[0m", ++$total);
+    }
+
+    // Add all other sources
     foreach ($sources as $i => $source) {
       Console::writef("\e[34m => [%d/%d] ", $i + 1, $total);
       $entries= 0;
@@ -78,10 +88,6 @@ class PackageLambda {
       }
       Console::writeLine("\e[0m");
     }
-
-    $file= $z->add(new ZipFileEntry('class.pth'));
-    $file->out()->write(preg_replace($this->exclude.'m', '?$1', file_get_contents('class.pth')));
-    Console::writeLinef("\e[34m => [%1\$d/%1\$d] class.pth\e[0m", $total);
 
     $z->close();
     Console::writeLine();
