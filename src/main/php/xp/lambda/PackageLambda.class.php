@@ -6,7 +6,11 @@ use io\streams\StreamTransfer;
 use util\cmd\Console;
 
 class PackageLambda {
-  const COMPRESSION_THRESHOLD = 24;
+  const COMPRESSION_THRESHOLD= 24;
+
+  const IS_LINK= 0120000;
+  const IS_FILE= 0100000;
+  const IS_FOLDER= 0040000;
 
   private $target, $sources, $exclude, $compression;
 
@@ -26,11 +30,21 @@ class PackageLambda {
   }
 
   /** Adds ZIP file entries */
-  private function add(ZipArchiveWriter $zip, Path $path) {
+  private function add(ZipArchiveWriter $zip, Path $path, Path $base, $prefix= '') {
     if (preg_match($this->exclude, $path->toString('/'))) return;
 
-    $relative= $path->relativeTo($this->sources->base);
-    if ($path->isFile()) {
+    $stat= lstat($path);
+    $relative= $prefix.$path->relativeTo($base);
+
+    // Handle the following file types:
+    // - Links: Resolve, then handle link targets
+    // - Files: Add to ZIP
+    // - Folders: Recursively add all subfolders and files therein
+    if (self::IS_LINK === ($stat['mode'] & self::IS_LINK)) {
+      $resolved= new Path(readlink($path));
+      $base= $resolved->isFile() ? new Path(dirname($resolved)) : $resolved;
+      yield from $this->add($zip, $resolved, $base, $relative.DIRECTORY_SEPARATOR);
+    } else if (self::IS_FILE === ($stat['mode'] & self::IS_FILE)) {
       $file= $zip->add(new ZipFileEntry($relative));
 
       // See https://stackoverflow.com/questions/46716095/minimum-file-size-for-compression-algorithms
@@ -39,10 +53,10 @@ class PackageLambda {
       }
       (new StreamTransfer($path->asFile()->in(), $file->out()))->transferAll();
       yield $file;
-    } else {
+    } else if (self::IS_FOLDER === ($stat['mode'] & self::IS_FOLDER)) {
       yield $zip->add(new ZipDirEntry($relative));
       foreach ($path->asFolder()->entries() as $entry) {
-        yield from $this->add($zip, $entry);
+        yield from $this->add($zip, $entry, $base, $prefix);
       }
     }
   }
@@ -56,7 +70,7 @@ class PackageLambda {
     foreach ($sources as $i => $source) {
       Console::writef("\e[34m => [%d/%d] ", $i + 1, $total);
       $entries= 0;
-      foreach ($this->add($z, new Path($source)) as $entry) {
+      foreach ($this->add($z, new Path($source), $this->sources->base) as $entry) {
         $entries++;
         Console::writef('%-60s %4d%s', substr($entry->getName(), -60), $entries, str_repeat("\x08", 65));
       }
