@@ -73,7 +73,7 @@ class PackagingTest {
     $zip= $this->package(new Sources($this->create(['src' => ['dir', 0755]]), ['src']));
 
     $dir= $zip->next();
-    Assert::equals('src'.DIRECTORY_SEPARATOR, $dir->getName());
+    Assert::equals('src/', $dir->getName());
     Assert::true($dir->isDirectory());
     Assert::false($zip->hasNext());
   }
