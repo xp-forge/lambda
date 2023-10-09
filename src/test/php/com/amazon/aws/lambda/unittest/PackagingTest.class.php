@@ -160,4 +160,39 @@ class PackagingTest {
 
     Assert::false($zip->hasNext());
   }
+
+  #[Test, Runtime(os: 'Linux'), Values(['../../libs/inc.pth', '%s/libs/inc.pth'])]
+  public function link_to_file($target) {
+    $tempDir= $this->tempDir();
+
+    $link= sprintf($target, rtrim($tempDir->getURI(), DIRECTORY_SEPARATOR));
+    $path= $this->create([
+      'libs/'                => [Sources::IS_FOLDER, 0755],
+      'libs/inc.pth'         => [Sources::IS_FILE, 'src/main/php'],
+      'project'              => [Sources::IS_FOLDER, 0755],
+      'project/src'          => [Sources::IS_FOLDER, 0755],
+      'project/src/file.txt' => [Sources::IS_FILE, 'Test'],
+      'project/lib'          => [Sources::IS_FOLDER, 0755],
+      'project/lib/inc.pth'  => [Sources::IS_LINK, $link],
+    ], $tempDir);
+    $zip= $this->package(new Sources(new Path($path, 'project'), ['src', 'lib']));
+
+    $dir= $zip->next();
+    Assert::equals('src/', $dir->getName());
+    Assert::true($dir->isDirectory());
+
+    $file= $zip->next();
+    Assert::equals('src/file.txt', $file->getName());
+    Assert::equals(4, $file->getSize());
+
+    $lib= $zip->next();
+    Assert::equals('lib/', $lib->getName());
+    Assert::true($lib->isDirectory());
+
+    $path= $zip->next();
+    Assert::equals('lib/inc.pth', $path->getName());
+    Assert::equals(12, $path->getSize());
+
+    Assert::false($zip->hasNext());
+  }
 }

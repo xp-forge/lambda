@@ -40,10 +40,15 @@ class PackageLambda {
     if (Sources::IS_LINK === ($stat['mode'] & Sources::IS_LINK)) {
       $target= new Path(readlink($path));
       $resolved= Path::real($target->isAbsolute() ? $target : [$path->parent(), $target], $base);
-      if ($resolved->exists()) {
-        $base= $resolved->isFile() ? new Path(dirname($resolved)) : $resolved;
-        yield from $this->add($zip, $resolved, $base, $relative.DIRECTORY_SEPARATOR);
+      if (!$resolved->exists()) return;
+
+      if ($resolved->isFile()) {
+        $base= new Path(dirname($resolved));
+        $relative= dirname($relative);
+      } else {
+        $base= $resolved;
       }
+      yield from $this->add($zip, $resolved, $base, $relative.DIRECTORY_SEPARATOR);
     } else if (Sources::IS_FILE === ($stat['mode'] & Sources::IS_FILE)) {
       $file= $zip->add(new ZipFileEntry($relative));
 
