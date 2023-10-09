@@ -122,6 +122,27 @@ class PackagingTest {
     Assert::false($zip->hasNext());
   }
 
+  #[Test, Values(['src/test', 'src/it'])]
+  public function test_sources_ignored($test) {
+    $path= $this->create([
+      'src'          => [Sources::IS_FOLDER, 0755],
+      $test          => [Sources::IS_FOLDER, 0755],
+      $test.'/t.sh'  => [Sources::IS_FILE, 'Test'],
+      'src/file.txt' => [Sources::IS_FILE, 'Test']
+    ]);
+    $zip= $this->package(new Sources($path, ['src']));
+
+    $dir= $zip->next();
+    Assert::equals('src/', $dir->getName());
+    Assert::true($dir->isDirectory());
+
+    $file= $zip->next();
+    Assert::equals('src/file.txt', $file->getName());
+    Assert::equals(4, $file->getSize());
+
+    Assert::false($zip->hasNext());
+  }
+
   #[Test, Runtime(os: 'Linux'), Values(['../../core', '%s/core'])]
   public function link_inside_directory($target) {
     $tempDir= $this->tempDir();
