@@ -128,7 +128,7 @@ To run your lambda locally, use the following:
 
 ```bash
 $ xp lambda run Greet '{"name":"Timm"}'
-Hello Timm from PHP 8.2.7 via Greet @ test-local-1
+Hello Timm from PHP 8.2.11 via Greet @ test-local-1
 ```
 
 *This does not provide a complete lambda environment, and does not have any execution limits imposed on it! To detect this programmatically, use `$this->environment->local()`, which will return true.*
@@ -142,7 +142,7 @@ $ xp lambda test Greet '{"name":"Timm"}'
 START RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24 Version: $LATEST
 END RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24
 REPORT RequestId: 9ff45cda-df9b-1b8c-c21b-5fe27c8f2d24  Init Duration: 922.19 ms...
-"Hello Timm from PHP 8.2.7 via test @ us-east-1"
+"Hello Timm from PHP 8.2.11 via test @ us-east-1"
 ```
 
 *This functionality is provided by the [AWS Lambda base images for custom runtimes](https://gallery.ecr.aws/lambda/provided). Although this also runs on your machine, `$this->environment->local()` will return false.*
