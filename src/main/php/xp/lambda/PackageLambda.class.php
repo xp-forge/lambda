@@ -30,18 +30,20 @@ class PackageLambda {
   private function add(ZipArchiveWriter $zip, Path $path, Path $base, $prefix= '') {
     if (preg_match($this->exclude, $path->toString('/'))) return;
 
-    $stat= lstat($path);
-    $relative= $prefix.$path->relativeTo($base);
+    // Check if the given path exists, suppressing any warnings
+    if (false === ($stat= lstat($path))) {
+      \xp::gc(__FILE__, __LINE__ - 1);
+      return;
+    }
 
     // Handle the following file types:
     // - Links: Resolve, then handle link targets
     // - Files: Add to ZIP
     // - Folders: Recursively add all subfolders and files therein
+    $relative= $prefix.$path->relativeTo($base);
     if (Sources::IS_LINK === ($stat['mode'] & Sources::IS_LINK)) {
       $target= new Path(readlink($path));
       $resolved= Path::real($target->isAbsolute() ? $target : [$path->parent(), $target], $base);
-      if (!$resolved->exists()) return;
-
       if ($resolved->isFile()) {
         $base= new Path(dirname($resolved));
         $relative= dirname($relative);
