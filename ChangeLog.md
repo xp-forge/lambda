@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 5.1.0 / 2023-10-09
+
+* Merged PR #26: Resolve paths in symlinks before adding to ZIP file
+  (@thekid)
+
 ## 5.0.0 / 2023-06-24
 
 This major release add support for response streaming, currently only
