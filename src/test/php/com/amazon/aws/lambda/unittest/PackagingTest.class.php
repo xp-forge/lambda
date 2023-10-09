@@ -5,60 +5,60 @@ use io\streams\MemoryOutputStream;
 use io\{File, Files, Folder, Path};
 use lang\Environment;
 use test\verify\Runtime;
-use test\{After, Assert, Before, Test, Values};
+use test\{After, Assert, Test, Values};
 use util\cmd\Console;
 use xp\lambda\{PackageLambda, Sources};
 
 class PackagingTest {
-  private $tempDir;
+  private $archives= [], $cleanup= [];
 
-  #[Before]
-  private function tempDir() {
-    $this->tempDir= new Folder(Environment::tempDir(), uniqid());
-    $this->tempDir->create();
+  /** Creates a new temporary folder */
+  private function tempDir(): Folder {
+    $this->cleanup[]= $f= new Folder(Environment::tempDir(), uniqid());
+    $f->create();
+    return $f;
   }
 
-  #[After]
-  private function cleanup(Folder $folder= null) {
-    $folder ?? $folder= $this->tempDir;
+  /** @return void */
+  private function removeDir(Folder $folder) {
     foreach ($folder->entries() as $entry) {
       switch ($m= lstat($entry)['mode'] & 0170000) {
         case Sources::IS_LINK: unlink($entry); break;
         case Sources::IS_FILE: $entry->asFile()->unlink(); break;
-        case Sources::IS_FOLDER: $this->cleanup($entry->asFolder()); break;
+        case Sources::IS_FOLDER: $this->removeDir($entry->asFolder()); break;
       }
     }
   }
 
   /** Creates files and directory from given definitions */
-  private function create(array $definitions): Path {
-    $this->cleanup();
+  private function create(array $definitions, Folder $folder= null): Path {
+    $folder ?? $folder= $this->tempDir();
 
     // Create sources from definitions
     foreach ($definitions as $name => $definition) {
       switch ($definition[0]) {
         case Sources::IS_FILE:
-          Files::write(new File($this->tempDir, $name), $definition[1]);
+          Files::write(new File($folder, $name), $definition[1]);
           break;
 
         case Sources::IS_FOLDER:
-          (new Folder($this->tempDir, $name))->create($definition[1]);
+          (new Folder($folder, $name))->create($definition[1]);
           break;
 
         case Sources::IS_LINK:
-          symlink($definition[1], new Path($this->tempDir, $name));
+          symlink($definition[1], new Path($folder, $name));
           break;
       }
     }
 
-    return new Path($this->tempDir);
+    return new Path($folder);
   }
 
   /** Creates package from given sources */
   private function package(Sources $sources): ZipIterator {
 
     // Run packaging command
-    $target= new Path($this->tempDir, 'test.zip');
+    $target= new Path($this->tempDir(), 'test.zip');
     $out= Console::$out->stream();
     Console::$out->redirect(new MemoryOutputStream());
     try {
@@ -68,7 +68,19 @@ class PackagingTest {
       Console::$out->redirect($out);
     }
 
-    return ZipFile::open($target)->iterator();
+    // Remember to close the archive
+    $this->archives[]= $zip= ZipFile::open($target);
+    return $zip->iterator();
+  }
+
+  #[After]
+  private function cleanup() {
+    foreach ($this->files as $file) {
+      $file->close();
+    }
+    foreach ($this->cleanup as $folder) {
+      $this->removeDir($folder);
+    }
   }
 
   #[Test]
@@ -112,7 +124,9 @@ class PackagingTest {
 
   #[Test, Runtime(os: 'Linux'), Values(['../../core', '%s/core'])]
   public function link_inside_directory($target) {
-    $link= sprintf($target, rtrim($this->tempDir->getURI(), DIRECTORY_SEPARATOR));
+    $tempDir= $this->tempDir();
+
+    $link= sprintf($target, rtrim($tempDir->getURI(), DIRECTORY_SEPARATOR));
     $path= $this->create([
       'core/'                => [Sources::IS_FOLDER, 0755],
       'core/composer.json'   => [Sources::IS_FILE, '{"require":{"php":">=7.0"}}'],
@@ -121,7 +135,7 @@ class PackagingTest {
       'project/src/file.txt' => [Sources::IS_FILE, 'Test'],
       'project/lib'          => [Sources::IS_FOLDER, 0755],
       'project/lib/core'     => [Sources::IS_LINK, $link],
-    ]);
+    ], $tempDir);
     $zip= $this->package(new Sources(new Path($path, 'project'), ['src', 'lib']));
 
     $dir= $zip->next();
