@@ -9,11 +9,6 @@ use util\cmd\Console;
 class PackageLambda {
   const COMPRESSION_THRESHOLD= 24;
 
-  // See https://www.php.net/manual/en/function.fileperms.php
-  const IS_LINK= 0120000;
-  const IS_FILE= 0100000;
-  const IS_FOLDER= 0040000;
-
   private $target, $sources, $exclude, $compression;
 
   public function __construct(Path $target, Sources $sources, string $exclude= '#(^|/)(\..+|src/test|src/it)(/|$)#') {
@@ -42,13 +37,13 @@ class PackageLambda {
     // - Links: Resolve, then handle link targets
     // - Files: Add to ZIP
     // - Folders: Recursively add all subfolders and files therein
-    if (self::IS_LINK === ($stat['mode'] & self::IS_LINK)) {
+    if (Sources::IS_LINK === ($stat['mode'] & Sources::IS_LINK)) {
       $resolved= Path::real([dirname($path), readlink($path)], $base);
       if ($resolved->exists()) {
         $base= $resolved->isFile() ? new Path(dirname($resolved)) : $resolved;
         yield from $this->add($zip, $resolved, $base, $relative.DIRECTORY_SEPARATOR);
       }
-    } else if (self::IS_FILE === ($stat['mode'] & self::IS_FILE)) {
+    } else if (Sources::IS_FILE === ($stat['mode'] & Sources::IS_FILE)) {
       $file= $zip->add(new ZipFileEntry($relative));
 
       // See https://stackoverflow.com/questions/46716095/minimum-file-size-for-compression-algorithms
@@ -57,7 +52,7 @@ class PackageLambda {
       }
       (new StreamTransfer($path->asFile()->in(), $file->out()))->transferAll();
       yield $file;
-    } else if (self::IS_FOLDER === ($stat['mode'] & self::IS_FOLDER)) {
+    } else if (Sources::IS_FOLDER === ($stat['mode'] & Sources::IS_FOLDER)) {
       yield $zip->add(new ZipDirEntry($relative));
       foreach ($path->asFolder()->entries() as $entry) {
         yield from $this->add($zip, $entry, $base, $prefix);
