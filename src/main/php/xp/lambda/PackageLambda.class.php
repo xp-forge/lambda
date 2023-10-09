@@ -43,9 +43,11 @@ class PackageLambda {
     // - Files: Add to ZIP
     // - Folders: Recursively add all subfolders and files therein
     if (self::IS_LINK === ($stat['mode'] & self::IS_LINK)) {
-      $resolved= new Path(readlink($path));
-      $base= $resolved->isFile() ? new Path(dirname($resolved)) : $resolved;
-      yield from $this->add($zip, $resolved, $base, $relative.DIRECTORY_SEPARATOR);
+      $resolved= Path::real([dirname($path), readlink($path)], $base);
+      if ($resolved->exists()) {
+        $base= $resolved->isFile() ? new Path(dirname($resolved)) : $resolved;
+        yield from $this->add($zip, $resolved, $base, $relative.DIRECTORY_SEPARATOR);
+      }
     } else if (self::IS_FILE === ($stat['mode'] & self::IS_FILE)) {
       $file= $zip->add(new ZipFileEntry($relative));
 
