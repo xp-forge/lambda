@@ -10,7 +10,7 @@ use util\cmd\Console;
 use xp\lambda\{PackageLambda, Sources};
 
 class PackagingTest {
-  private $archives= [], $cleanup= [];
+  private $cleanup= [];
 
   /** Creates a new temporary folder */
   private function tempDir(): Folder {
@@ -69,15 +69,11 @@ class PackagingTest {
     }
 
     // Remember to close the archive
-    $this->archives[]= $zip= ZipFile::open($target);
-    return $zip->iterator();
+    return ZipFile::open($target)->iterator();
   }
 
   #[After]
   private function cleanup() {
-    foreach ($this->files as $file) {
-      $file->close();
-    }
     foreach ($this->cleanup as $folder) {
       $this->removeDir($folder);
     }
@@ -127,7 +123,7 @@ class PackagingTest {
     $path= $this->create([
       'src'          => [Sources::IS_FOLDER, 0755],
       $test          => [Sources::IS_FOLDER, 0755],
-      $test.'/t.sh'  => [Sources::IS_FILE, 'Test'],
+      $test.'/t.sh'  => [Sources::IS_FILE, '#!/bin/sh ...'],
       'src/file.txt' => [Sources::IS_FILE, 'Test']
     ]);
     $zip= $this->package(new Sources($path, ['src']));
