@@ -19,17 +19,6 @@ class PackagingTest {
     return $f;
   }
 
-  /** @return void */
-  private function removeDir(Folder $folder) {
-    foreach ($folder->entries() as $entry) {
-      switch ($m= lstat($entry)['mode'] & 0170000) {
-        case Sources::IS_LINK: unlink($entry); break;
-        case Sources::IS_FILE: $entry->asFile()->unlink(); break;
-        case Sources::IS_FOLDER: $this->removeDir($entry->asFolder()); break;
-      }
-    }
-  }
-
   /** Creates files and directory from given definitions */
   private function create(array $definitions, Folder $folder= null): Path {
     $folder ?? $folder= $this->tempDir();
@@ -75,7 +64,7 @@ class PackagingTest {
   #[After]
   private function cleanup() {
     foreach ($this->cleanup as $folder) {
-      $this->removeDir($folder);
+      $folder->unlink();
     }
   }
 
