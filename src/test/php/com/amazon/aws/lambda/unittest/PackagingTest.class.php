@@ -4,6 +4,7 @@ use io\archive\zip\{ZipFile, ZipIterator};
 use io\streams\MemoryOutputStream;
 use io\{File, Files, Folder, Path};
 use lang\Environment;
+use test\verify\Runtime;
 use test\{After, Assert, Before, Test, Values};
 use util\cmd\Console;
 use xp\lambda\{PackageLambda, Sources};
@@ -109,7 +110,7 @@ class PackagingTest {
     Assert::false($zip->hasNext());
   }
 
-  #[Test, Values(['../../core', '%s/core'])]
+  #[Test, Runtime(os: 'Linux'), Values(['../../core', '%s/core'])]
   public function link_inside_directory($target) {
     $link= sprintf($target, rtrim($this->tempDir->getURI(), DIRECTORY_SEPARATOR));
     $path= $this->create([
