@@ -4,7 +4,7 @@ use io\archive\zip\{ZipFile, ZipIterator};
 use io\streams\MemoryOutputStream;
 use io\{File, Files, Folder, Path};
 use lang\Environment;
-use test\{After, Assert, Before, Test};
+use test\{After, Assert, Before, Test, Values};
 use util\cmd\Console;
 use xp\lambda\{PackageLambda, Sources};
 
@@ -31,6 +31,7 @@ class PackagingTest {
 
   /** Creates files and directory from given definitions */
   private function create(array $definitions): Path {
+    $this->cleanup();
 
     // Create sources from definitions
     foreach ($definitions as $name => $definition) {
@@ -108,8 +109,9 @@ class PackagingTest {
     Assert::false($zip->hasNext());
   }
 
-  #[Test]
-  public function link_inside_directory() {
+  #[Test, Values(['../../core', '%s/core'])]
+  public function link_inside_directory($target) {
+    $link= sprintf($target, rtrim($this->tempDir->getURI(), DIRECTORY_SEPARATOR));
     $path= $this->create([
       'core/'                => [Sources::IS_FOLDER, 0755],
       'core/composer.json'   => [Sources::IS_FILE, '{"require":{"php":">=7.0"}}'],
@@ -117,7 +119,7 @@ class PackagingTest {
       'project/src'          => [Sources::IS_FOLDER, 0755],
       'project/src/file.txt' => [Sources::IS_FILE, 'Test'],
       'project/lib'          => [Sources::IS_FOLDER, 0755],
-      'project/lib/core'     => [Sources::IS_LINK, '../../core'],
+      'project/lib/core'     => [Sources::IS_LINK, $link],
     ]);
     $zip= $this->package(new Sources(new Path($path, 'project'), ['src', 'lib']));
 
