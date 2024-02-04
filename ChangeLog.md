@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 5.2.0 / 2024-02-04
+
+* Made compatible with https://github.com/xp-framework/zip version 11.0
+  (@thekid)
+
 ## 5.1.0 / 2023-10-09
 
 * Merged PR #26: Resolve paths in symlinks before adding to ZIP file
