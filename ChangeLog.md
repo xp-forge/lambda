@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Added PHP 8.4 to the test matrix - @thekid
+
 ## 5.2.0 / 2024-02-04
 
 * Made compatible with https://github.com/xp-framework/zip version 11.0
