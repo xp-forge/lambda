@@ -16,8 +16,14 @@ use util\{FilesystemPropertySource, PropertyAccess};
 class Environment {
   public $root, $variables, $writer, $properties;
 
-  /** Creates a new environment */
-  public function __construct(string $root, StringWriter $writer= null, array $variables= null) {
+  /**
+   * Creates a new environment
+   *
+   * @param  string $root
+   * @param  ?io.streams.StringWriter $writer
+   * @param  ?[:string] $variables
+   */
+  public function __construct(string $root, $writer= null, $variables= null) {
     $this->root= $root;
     $this->variables= $variables ?? System::variables();
     $this->writer= $writer ?? Console::$out;
