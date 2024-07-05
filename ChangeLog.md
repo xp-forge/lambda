@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 5.4.0 / 2024-07-05
+
+* Made compatible with https://github.com/xp-forge/aws version 2.0
+  (@thekid)
+
 ## 5.3.0 / 2024-03-24
 
 * Made compatible with XP 12 - @thekid
