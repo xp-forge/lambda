@@ -8,10 +8,10 @@
   "require" : {
     "xp-framework/core": "^12.0 | ^11.0 | ^10.14",
     "xp-framework/http": "^10.0 | ^9.0",
-    "xp-framework/zip": "^11.0 | ^10.0 | ^9.0",
-    "xp-forge/aws": "^2.0 | ^1.0",
-    "xp-forge/json": "^5.0 | ^4.0",
-    "php": ">=7.0.0"
+    "xp-framework/zip": "^11.0 | ^10.0",
+    "xp-forge/aws": "^3.0 | ^2.0",
+    "xp-forge/json": "^6.0 | ^5.0",
+    "php": ">=7.4.0"
   },
   "require-dev" : {
     "xp-framework/test": "^2.0 | ^1.0"

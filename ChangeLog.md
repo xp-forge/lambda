@@ -3,6 +3,12 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 6.0.0 / 2025-05-04
+
+* **Heads up:** Dropped support for PHP < 7.4, see xp-framework/rfc#343
+  (@thekid)
+* Added PHP 8.5 to test matrix - @thekid
+
 ## 5.4.0 / 2024-07-05
 
 * Made compatible with https://github.com/xp-forge/aws version 2.0
