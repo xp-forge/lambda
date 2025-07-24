@@ -3,6 +3,12 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 6.1.0 / 2025-07-24
+
+* Removed default memory limit for PHP, let lambda infrastructure take
+  care of it. See issue #27
+  (@thekid)
+
 ## 6.0.0 / 2025-05-04
 
 * **Heads up:** Dropped support for PHP < 7.4, see xp-framework/rfc#343
