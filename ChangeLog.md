@@ -3,6 +3,11 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 6.2.0 / 2025-09-06
+
+* Build runtime with XP runners from GitHub. See xp-runners/reference#90
+  (@thekid)
+
 ## 6.1.0 / 2025-07-24
 
 * Removed default memory limit for PHP, let lambda infrastructure take

@@ -29,7 +29,7 @@ RUN cd php-src-php-${php_version} && ./buildconf --force && ./configure \
   make -j $(nproc) all install
 
 # Create XP Bootstrap
-RUN curl -L https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/e/entrypoint/xp-run-${xp_version}.sh \
+RUN curl -L https://github.com/xp-runners/reference/releases/download/v${xp_version}/xp-run-${xp_version}.sh \
   | sed -e 's/"$@"/xp.lambda.AwsRunner/g' > /opt/php/bootstrap \
   && chmod 755 /opt/php/bootstrap \
   && head -1 /opt/php/bootstrap | grep '^#!'
