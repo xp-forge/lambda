@@ -34,4 +34,6 @@ RUN curl -L https://baltocdn.com/xp-framework/xp-runners/distribution/downloads/
   && chmod 755 /opt/php/bootstrap \
   && head -1 /opt/php/bootstrap | grep '^#!'
 
-RUN cd /opt/php && strip bin/php && zip -9 runtime.zip bin/php bootstrap
+RUN echo "memory_limit=-1" > /opt/php/bin/php.ini
+
+RUN cd /opt/php && strip bin/php && zip -9 runtime.zip bin/php bin/php.ini bootstrap
