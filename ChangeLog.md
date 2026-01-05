@@ -3,6 +3,8 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Added PHP 8.6 to the test matrix - @thekid
+
 ## 6.2.0 / 2025-09-06
 
 * Build runtime with XP runners from GitHub. See xp-runners/reference#90
