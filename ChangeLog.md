@@ -3,6 +3,13 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 7.0.0 / 2026-02-14
+
+This major release migrates to Amazon Linux 2023. Amazon Linux 2 end of
+support date (End of Life, or EOL) will be on 2026-06-30 as announced at
+https://aws.amazon.com/amazon-linux-2/faqs/
+
+* Merged PR #28: Migrate from AL2 to AL2023 - @thekid
 * Added PHP 8.6 to the test matrix - @thekid
 
 ## 6.2.0 / 2025-09-06
