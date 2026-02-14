@@ -1,9 +1,9 @@
 ARG php_version="?.?.?"
 ARG xp_version="?.?.?"
 
-FROM lambda-xp-runtime:${php_version} as build
+FROM lambda-xp-runtime:${php_version} AS build
 
-FROM public.ecr.aws/lambda/provided:al2
+FROM public.ecr.aws/lambda/provided:al2023
 
 COPY --from=build /opt/php/bin/ /opt/bin/
 
@@ -14,8 +14,9 @@ RUN echo $'#!/bin/sh\n\n\
 export _HANDLER="$1"\n\
 /usr/local/bin/aws-lambda-rie /var/runtime/bootstrap --log-level error &\n\
 pid=$!\n\
-curl -s "http://localhost:8080/2015-03-31/functions/function/invocations" -d "$2"\n\
+timeout 10 sh -c "until cat < /dev/null > /dev/tcp/127.0.0.1/9001 ; do sleep 0.1; done" 2>/dev/null\n\
+curl -s "http://127.0.0.1:8080/2015-03-31/functions/function/invocations" -d "$2"\n\
 kill -2 $pid\n\
 echo' > /lambda-entrypoint.sh
 
-ENV TZ UTC
+ENV TZ=UTC
