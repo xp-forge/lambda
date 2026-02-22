@@ -62,7 +62,7 @@ class AwsRunner {
       try {
         $r= $api->receive('invocation/next');
         $context= new Context($r->headers(), $variables);
-        $event= 0 === $context->payloadLength ? null : Json::read(new StreamInput($r->in()));
+        $event= 0 === $context->payloadLength ? null : (array)Json::read(new StreamInput($r->in()));
 
         $lambda->invoke($event, $context);
       } catch (Throwable $t) {

@@ -3,6 +3,9 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Fixed issze #31: Event is not always an array (when using JSON library
+  6.0+, see https://github.com/xp-forge/json/pull/18
+  (@thekid)
 * Fixed issue #29: Implicitly marking parameter as nullable is deprecated
   (@thekid)
 
