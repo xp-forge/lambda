@@ -68,7 +68,7 @@ class RunLambda {
       ];
 
       try {
-        $lambda->invoke(Json::read($event), new Context($headers, $variables));
+        $lambda->invoke((array)Json::read($event), new Context($headers, $variables));
       } catch (Throwable $e) {
         Console::$err->writeLine($e);
         $status= 1;
