@@ -44,7 +44,7 @@ use text\json\{Json, StreamInput};
  * Packaging will always include the `vendor` directory automatically.
  */
 class Runner {
-  const PHP_RELEASES = 'https://www.php.net/releases/';
+  const PHP_RELEASES= 'https://www.php.net/releases/';
 
   /** Fetches JSON for a given URL */
   private static function fetch(string $query) {
@@ -52,7 +52,7 @@ class Runner {
   }
 
   /** Resolves the PHP version */
-  private static function resolve(string $version= null): string {
+  private static function resolve(?string $version= null): string {
     if (null === $version) {
       $select= ['version' => PHP_VERSION];
     } else if ('latest' === $version) {

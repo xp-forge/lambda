@@ -3,6 +3,9 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+* Fixed issue #29: Implicitly marking parameter as nullable is deprecated
+  (@thekid)
+
 ## 7.0.0 / 2026-02-14
 
 This major release migrates to Amazon Linux 2023. Amazon Linux 2 end of
