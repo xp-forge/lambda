@@ -3,6 +3,10 @@ AWS Lambda change log
 
 ## ?.?.? / ????-??-??
 
+## 7.1.0 / 2026-04-25
+
+* Made compatible with `xp-framework/http` version 11.0 - @thekid
+
 ## 7.0.1 / 2026-02-22
 
 * Fixed issue #31: Event is not always an array (when using JSON library
