@@ -2,7 +2,6 @@
 
 use Throwable;
 use com\amazon\aws\lambda\{Context, Environment, Handler, InvokeMode, RuntimeApi};
-use io\IOException;
 use lang\{XPClass, XPException, IllegalArgumentException, Environment as System};
 use peer\http\{HttpConnection, RequestData};
 use text\json\{Json, StreamInput};
