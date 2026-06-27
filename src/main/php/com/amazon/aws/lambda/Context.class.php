@@ -85,7 +85,7 @@ class Context implements Value {
   }
 
   /** @return string */
-  public function hashCode() { return spl_object_hash($this); }
+  public function hashCode() { return spl_object_id($this); }
 
   /**
    * Comparison
